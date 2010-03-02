@@ -1,0 +1,12 @@
+diff -Nru kspread-1.6.3_p20090204.orig/kspread/digest.cc kspread-1.6.3_p20090204/kspread/digest.cc
+--- kspread-1.6.3_p20090204.orig/kspread/digest.cc	2009-02-04 16:37:26.000000000 +0000
++++ kspread-1.6.3_p20090204/kspread/digest.cc	2009-05-26 08:58:08.000000000 +0100
+@@ -50,7 +50,7 @@
+ 
+ #if  SIZEOF_INT == 4
+ typedef unsigned int sal_uInt32;
+-#elif
++#else
+ typedef unsigned long sal_uInt32;
+ #endif
+ 

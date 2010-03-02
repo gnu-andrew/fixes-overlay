@@ -1,0 +1,13 @@
+diff -ru mplib-beta-1.110-orig/src/texk/web2c/mpdir/mpost.w mplib-beta-1.110/src/texk/web2c/mpdir/mpost.w
+--- mplib-beta-1.110-orig/src/texk/web2c/mpdir/mpost.w	2008-11-27 08:56:39.000000000 -0500
++++ mplib-beta-1.110/src/texk/web2c/mpdir/mpost.w	2010-01-27 03:12:47.985314228 -0500
+@@ -51,7 +51,9 @@
+ #endif
+ #include <kpathsea/kpathsea.h>
+ extern char *kpathsea_version_string;
++#ifndef kpse_program_name
+ extern string kpse_program_name;
++#endif
+ @= /*@@null@@*/ @> static char *mpost_tex_program = NULL;
+ static int debug = 0; /* debugging for makempx */
+ #ifdef WIN32

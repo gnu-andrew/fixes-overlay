@@ -1,0 +1,11 @@
+--- kword-1.6.3_p20090204.orig/filters/kword/pdf/xpdf/goo/gfile.cc	2009-02-04 16:36:27.000000000 +0000
++++ kword-1.6.3_p20090204/filters/kword/pdf/xpdf/goo/gfile.cc	2009-05-28 19:49:11.000000000 +0100
+@@ -315,7 +315,7 @@
+ 
+ #else
+   //---------- Unix ----------
+-  char *p;
++  const char *p;
+ 
+   if ((p = strrchr(fileName, '/')))
+     return new GString(fileName, p - fileName);
