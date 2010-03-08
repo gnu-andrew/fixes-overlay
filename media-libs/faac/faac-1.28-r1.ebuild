@@ -23,8 +23,12 @@ src_prepare() {
 	epunt_cxx
 }
 
+src_configure() {
+	econf CFLAGS="${CFLAGS} -std=c99" || die "econf failed"
+}
+
 src_install() {
-	emake CFLAGS="${CFLAGS} -std=c99" DESTDIR="${D}" install || die "emake install failed"
+	emake DESTDIR="${D}" install || die "emake install failed"
 	dodoc AUTHORS ChangeLog NEWS README TODO
 	dohtml docs/*.html
 	insinto /usr/share/doc/${PF}/pdf
