@@ -1,0 +1,12 @@
+diff -Nru gpac.old/modules/img_in/Makefile gpac/modules/img_in/Makefile
+--- work/gpac.old/modules/img_in/Makefile	2010-03-09 10:41:29.281572649 +0000
++++ work/gpac/modules/img_in/Makefile	2010-03-09 10:42:08.394573261 +0000
+@@ -26,7 +26,7 @@
+ else
+ OBJS+=jp2_dec.o
+ LINKLIBS+= -lopenjpeg
+-CFLAGS+=-DGPAC_HAS_JP2
++CFLAGS+=-DGPAC_HAS_JP2 -std=c99
+ #local openjpeg lib
+ ifeq ($(CONFIG_JP2), local)
+ NEED_LOCAL_LIB="yes"
