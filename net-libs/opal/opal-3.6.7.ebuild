@@ -15,7 +15,7 @@ LICENSE="MPL-1.0"
 SLOT="0"
 KEYWORDS="~alpha ~amd64 ~ia64 ~ppc ~sparc ~x86"
 IUSE="+audio capi celt debug doc dtmf examples fax ffmpeg h224 h281 h323 iax
-ipv6 ivr ixj java ldap lid +plugins sbc sip sipim srtp ssl stats swig theora
+ilbc ipv6 ivr ixj java ldap lid +plugins sbc sip sipim srtp ssl stats swig theora
 +video vpb vxml wav x264 x264-static xml"
 
 RDEPEND=">=net-libs/ptlib-2.6.6[stun,debug=,audio?,dtmf?,ipv6?,ldap?,ssl?,video?,vxml?,wav?,xml?]
@@ -24,7 +24,7 @@ RDEPEND=">=net-libs/ptlib-2.6.6[stun,debug=,audio?,dtmf?,ipv6?,ldap?,ssl?,video?
 	h323? ( net-libs/ptlib[asn] )
 	ivr? ( net-libs/ptlib[xml,vxml] )
 	java? ( >=virtual/jre-1.4 )
-	plugins? ( ilpc? ( dev-libs/ilbc-rfc3951 )
+	plugins? ( ilbc? ( dev-libs/ilbc-rfc3951 )
 		media-sound/gsm
 		capi? ( net-dialup/capi4k-utils )
 		celt? ( >=media-libs/celt-0.5.0 )
@@ -88,7 +88,7 @@ src_prepare() {
 	epatch "${FILESDIR}"/${PN}-3.6.4-jdkroot.patch
 
 	epatch "${FILESDIR}/${P}-celt-0.7-update.patch"
-	epatch "${FILESDIR}/${P}-nonfree-ilpc.patch"
+	epatch "${FILESDIR}/${P}-nonfree-ilbc.patch"
 
 	# h224 really needs h323 ?
 	# TODO: get a confirmation in ml
@@ -212,7 +212,7 @@ src_configure() {
 		$(use_enable vpb) \
 		$(use_enable x264 h264) \
 		$(use_enable x264-static x264-link-static) \
-		$(use_enable ilpc) \
+		$(use_enable ilbc) \
 		${forcedconf}
 }
 

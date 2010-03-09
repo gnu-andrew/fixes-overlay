@@ -42,7 +42,7 @@ diff -Nru opal-3.6.7.old/Makefile.in opal-3.6.7/Makefile.in
  ifeq ($(OSTYPE),Darwin)
 diff -Nru opal-3.6.7.old/plugins/configure.ac opal-3.6.7/plugins/configure.ac
 --- opal-3.6.7.old/plugins/configure.ac	2010-03-09 16:49:38.000000000 +0000
-+++ opal-3.6.7/plugins/configure.ac	2010-03-09 20:35:23.000000000 +0000
++++ opal-3.6.7/plugins/configure.ac	2010-03-09 20:43:15.000000000 +0000
 @@ -184,7 +184,18 @@
  dnl     ########################
  dnl     iLBC (system/local)
@@ -63,6 +63,18 @@ diff -Nru opal-3.6.7.old/plugins/configure.ac opal-3.6.7/plugins/configure.ac
  AC_SUBST(ILBC_SYSTEM)
  AC_SUBST(ILBC_CFLAGS)
  AC_SUBST(ILBC_LIBS)
+@@ -543,6 +554,11 @@
+ else
+ echo "                              SBC :  no"
+ fi
++if test "x${HAVE_ILBC}" = "xyes" ; then
++echo "                              iLBC :  yes"
++else
++echo "                              ILBC :  no"
++fi
+ 
+ echo ""
+ 
 diff -Nru opal-3.6.7.old/plugins/Makefile.in opal-3.6.7/plugins/Makefile.in
 --- opal-3.6.7.old/plugins/Makefile.in	2010-02-01 00:19:03.000000000 +0000
 +++ opal-3.6.7/plugins/Makefile.in	2010-03-09 20:36:53.000000000 +0000
