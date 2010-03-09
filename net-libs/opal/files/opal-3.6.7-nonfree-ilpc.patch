@@ -1,0 +1,42 @@
+diff -Nru opal-3.6.7.old/configure.ac opal-3.6.7/configure.ac
+--- opal-3.6.7.old/configure.ac	2010-03-09 16:49:38.000000000 +0000
++++ opal-3.6.7/configure.ac	2010-03-09 18:15:32.000000000 +0000
+@@ -88,6 +88,7 @@
+ OPAL_ZRTP=no
+ OPAL_SHARED_LIB=yes
+ OPAL_JAVA=yes
++OPAL_ILBC=yes
+ OPAL_HAS_MSRP=no
+ OPAL_HAS_SIPIM=yes
+ OPAL_HAS_RFC4103=yes
+@@ -519,6 +520,8 @@
+ dnl MSWIN_DEFINE  g711plc,OPAL_G711PLC
+ OPAL_SIMPLE_OPTION([g711plc],[OPAL_G711PLC], [whether to enable Packet Loss Concealment for G.711])
+ 
++OPAL_SIMPLE_OPTION([ilbc],[OPAL_ILBC], [whether to enable the non-Free iLBC plugin])
++
+ dnl MSWIN_DISPLAY statistics,Statistics gathering support
+ dnl MSWIN_DEFINE  statistics,OPAL_STATISTICS
+ OPAL_SIMPLE_OPTION([statistics],[OPAL_STATISTICS], [whether to enable statistics gathering support])
+diff -Nru opal-3.6.7.old/Makefile.in opal-3.6.7/Makefile.in
+--- opal-3.6.7.old/Makefile.in	2010-02-01 00:19:53.000000000 +0000
++++ opal-3.6.7/Makefile.in	2010-03-09 18:13:46.000000000 +0000
+@@ -361,7 +361,6 @@
+            $(OPAL_SRCDIR)/codec/g729mf.cxx \
+            $(OPAL_SRCDIR)/codec/gsm0610mf.cxx \
+            $(OPAL_SRCDIR)/codec/gsmamrmf.cxx \
+-           $(OPAL_SRCDIR)/codec/iLBCmf.cxx \
+            $(OPAL_SRCDIR)/codec/t38mf.cxx \
+            $(OPAL_SRCDIR)/codec/rfc2833.cxx \
+            $(OPAL_SRCDIR)/codec/opalwavfile.cxx \
+@@ -403,6 +402,10 @@
+ 
+ endif # ifeq ($(OPAL_AEC), yes)
+ 
++ifeq ($(OPAL_ILBC), yes)
++SOURCES += $(OPAL_SRCDIR)/codec/iLBCmf.cxx \
++endif
++
+ ####################################################
+ 
+ ifeq ($(OSTYPE),Darwin)
