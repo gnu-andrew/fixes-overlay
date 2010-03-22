@@ -51,7 +51,8 @@ src_unpack() {
 
 	# We need to compile libs first
 	echo "SUBDIRS = liboofilter kword" > "${S}"/filters/Makefile.am
-
+	echo "SUBDIRS = lib interfaces autocorrect doc mimetypes pics plugins servicetypes templates tools kword filters" \
+		> "${S}"/Makefile.am
 	for i in $(find "${S}"/lib -iname "*\.ui"); do
 		"${QTDIR}"/bin/uic ${i} > ${i%.ui}.h
 	done
