@@ -1,4 +1,4 @@
-# Copyright 1999-2009 Gentoo Foundation
+# Copyright 1999-2010 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 # $Header: /var/cvsroot/gentoo-x86/app-office/kword/kword-1.6.3_p20090204.ebuild,v 1.11 2009/09/27 12:37:20 ranger Exp $
 
@@ -47,6 +47,7 @@ PATCHES=( "${FILESDIR}/${PN}-1.6.3-gcc44.patch" )
 
 src_unpack() {
 	subversion_src_unpack
+	kde-meta_src_unpack unpack
 
 	# We need to compile libs first
 	echo "SUBDIRS = liboofilter kword" > "${S}"/filters/Makefile.am

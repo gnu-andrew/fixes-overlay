@@ -231,42 +231,6 @@ kde-meta_src_unpack() {
 	case $section in
 	unpack)
 
-		# kdepim packages all seem to rely on libkdepim/kdepimmacros.h
-		# also, all kdepim Makefile.am's reference doc/api/Doxyfile.am
-		if [[ "$KMNAME" == "kdepim" ]]; then
-			KMEXTRACTONLY="$KMEXTRACTONLY libkdepim/kdepimmacros.h doc/api"
-		fi
-
-		# Create final list of stuff to extract
-		extractlist=""
-		for item in admin Makefile.am Makefile.am.in configure.in.in configure.in.mid configure.in.bot \
-					acinclude.m4 aclocal.m4 AUTHORS COPYING INSTALL README NEWS ChangeLog \
-					$KMMODULE $KMEXTRA $KMCOMPILEONLY $KMEXTRACTONLY $DOCS
-		do
-			extractlist="$extractlist $KMNAME-$TARBALLDIRVER/${item%/}"
-		done
-
-		# $KMTARPARAMS is also available for an ebuild to use; currently used by kturtle
-		TARFILE=$DISTDIR/$TARBALL
-		KMTARPARAMS="$KMTARPARAMS -j"
-		cd "${WORKDIR}"
-
-		echo ">>> Unpacking parts of ${TARBALL} to ${WORKDIR}"
-		# Note that KMTARPARAMS is also used by an ebuild
-		tar -xpf $TARFILE $KMTARPARAMS $extractlist	2> /dev/null
-
-		[[ -n ${A/${TARBALL}/} ]] && unpack ${A/${TARBALL}/}
-
-		# Avoid syncing if possible
-		# No idea what the above comment means...
-		if [[ -n "$RAWTARBALL" ]]; then
-			rm -f "${T}"/$RAWTARBALL
-		fi
-
-		# Default $S is based on $P not $myP; rename the extracted dir to fit $S
-		mv $KMNAME-$TARBALLDIRVER $P || die "mv $KMNAME-$TARBallDIRVER failed."
-		S="${WORKDIR}"/${P}
-
 		# Copy over KMCOPYLIB items
 		libname=""
 		for x in $KMCOPYLIB; do
