@@ -56,7 +56,7 @@ src_unpack() {
 	done
 
 	# Remove unneeded directories
-	for dirs in kexi kdgantt kchart karbon kformula kivio koshell kounavail kplato kpresenter krita kspread kugar; do
+	for dirs in kexi kdgantt kchart karbon kformula kivio koshell kounavail kplato kpresenter krita kugar; do
 		einfo "Removing ${dirs}..."
 		rm -rf "${S}"/"${dirs}"
 	done
