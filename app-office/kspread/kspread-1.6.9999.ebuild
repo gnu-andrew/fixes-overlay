@@ -11,6 +11,7 @@ DESCRIPTION="KOffice spreadsheet application."
 HOMEPAGE="http://www.koffice.org/"
 LICENSE="GPL-2 LGPL-2"
 ESVN_REPO_URI="svn://anonsvn.kde.org/home/kde/branches/koffice/1.6/koffice"
+ESVN_PROJECT="koffice"
 
 SLOT="3.5"
 KEYWORDS="alpha amd64 hppa ia64 ppc ppc64 sparc x86 ~x86-fbsd"
@@ -46,8 +47,6 @@ KMCOMPILEONLY="filters/liboofilter"
 KMEXTRA="filters/kspread"
 
 need-kde 3.5
-
-PATCHES=( "${FILESDIR}/${PN}-1.6.3-gcc44.patch" )
 
 src_unpack() {
 	subversion_src_unpack
