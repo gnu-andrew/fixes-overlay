@@ -45,7 +45,7 @@ src_unpack() {
 	kde-meta_src_unpack unpack
 
 	# Remove unneeded directories
-	for dirs in kdgantt kspread karbon kformula kivio koshell kounavail kplato kpresenter krita kugar kword kchart ; do
+	for dirs in kdgantt kspread karbon kformula kivio koshell kounavail kplato kpresenter krita kugar kword kchart filters ; do
 		einfo "Removing ${dirs}..."
 		rm -rf "${S}"/"${dirs}"
 	done
