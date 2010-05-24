@@ -18,7 +18,7 @@ KEYWORDS="alpha amd64 hppa ia64 ppc ppc64 sparc x86 ~x86-fbsd"
 IUSE=""
 
 DEPEND="~app-office/koffice-libs-1.6.3_p20090204
-	~app-office/kchart-1.6.3_p20090204
+	~app-office/kchart-1.6.9999
 	~app-office/kexi-1.6.3_p20090204"
 RDEPEND="${DEPEND}"
 
