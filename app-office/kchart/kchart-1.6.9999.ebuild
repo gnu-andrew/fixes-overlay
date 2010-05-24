@@ -47,7 +47,7 @@ src_unpack() {
 	echo "SUBDIRS = libdialogfilter kchart" > "$S"/filters/Makefile.am
 
 	# Remove unneeded directories
-	for dirs in kdgantt kspread karbon kformula kivio koshell kounavail kplato kpresenter krita kugar kword; do
+	for dirs in kdgantt kspread karbon kformula kivio koshell kounavail kplato kpresenter krita kugar kword kexi ; do
 		einfo "Removing ${dirs}..."
 		rm -rf "${S}"/"${dirs}"
 	done
