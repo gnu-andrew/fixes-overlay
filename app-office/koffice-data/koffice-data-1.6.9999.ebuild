@@ -33,7 +33,7 @@ src_unpack() {
 
 	# Remove unneeded directories
 	for dirs in kdgantt kspread karbon kformula kivio koshell kounavail kplato kpresenter krita kugar kword kchart filters \
-	 kexi ; do
+	 kexi lib interfaces plugins tools ; do
 		einfo "Removing ${dirs}..."
 		rm -rf "${S}"/"${dirs}"
 	done
