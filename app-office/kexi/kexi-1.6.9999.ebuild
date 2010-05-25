@@ -17,7 +17,7 @@ SLOT="3.5"
 KEYWORDS="alpha amd64 hppa ia64 ppc ppc64 sparc x86 ~x86-fbsd"
 IUSE="mysql postgres"
 
-DEPEND="~app-office/koffice-libs-1.6.3_p20090204
+DEPEND="~app-office/koffice-libs-1.6.9999
 	sys-libs/readline
 	mysql? ( virtual/mysql )
 	postgres? ( =dev-libs/libpqxx-2.6* )"

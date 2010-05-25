@@ -17,7 +17,7 @@ SLOT="3.5"
 KEYWORDS="alpha amd64 hppa ia64 ppc ppc64 sparc x86 ~x86-fbsd"
 IUSE=""
 
-DEPEND="~app-office/koffice-libs-1.6.3_p20090204"
+DEPEND="~app-office/koffice-libs-1.6.9999"
 RDEPEND="${DEPEND}"
 
 KMCOPYLIB="libkformula lib/kformula
