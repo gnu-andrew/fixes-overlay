@@ -45,6 +45,11 @@ src_unpack() {
 	subversion_src_unpack
 	kde-meta_src_unpack unpack
 
+	# work with new wv2 API: http://wvware.svn.sourceforge.net/viewvc/wvware?view=rev&revision=33
+	if has_version ">=app-text/wv2-0.4.2"; then
+		epatch "${FILESDIR}/wv2.patch"
+	fi
+
 	# Force the compilation of libkopainter.
 	sed -i 's:$(KOPAINTERDIR):kopainter:' "${S}/lib/Makefile.am"
 
@@ -55,7 +60,7 @@ src_unpack() {
 	fi
 
 	# Remove unneeded directories
-	for dirs in kdgantt karbon kformula kivio koshell kplato kpresenter krita kugar kspread kword; do
+	for dirs in kdgantt karbon kformula kivio koshell kplato kpresenter krita kugar kspread kword kchart; do
 		einfo "Removing ${dirs}..."
 		rm -rf "${S}"/"${dirs}"
 	done
