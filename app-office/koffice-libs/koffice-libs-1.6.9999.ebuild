@@ -41,6 +41,8 @@ KMEXTRACTONLY="
 
 need-kde 3.5
 
+PATCHES=( "${FILESDIR}/const_char.patch" )
+
 src_unpack() {
 	subversion_src_unpack
 	kde-meta_src_unpack unpack
