@@ -2,6 +2,11 @@
 # Copyright 1999-2010 Gentoo Foundation; Distributed under the GPL v2
 # $Header: /var/cvsroot/gentoo-x86/app-misc/workrave/ChangeLog,v 1.67 2010/07/09 09:13:18 pacho Exp $
 
+*workrave-1.9.2 (14 Dec 2010)
+
+  14 Dec 2010; Andrew John Hughes <andrew@gentoo.org> +workrave-1.9.2.ebuild:
+  Support workrave 1.9.2 with the local state patch.
+
   09 Jul 2010; Pacho Ramos <pacho@gentoo.org>
   -files/workrave-1.8.4-nls_macros.patch, -workrave-1.8.5.ebuild,
   -files/workrave-1.8.5-gcc43.patch,
