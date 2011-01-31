@@ -1,6 +1,11 @@
 # ChangeLog for app-misc/workrave
-# Copyright 1999-2010 Gentoo Foundation; Distributed under the GPL v2
+# Copyright 1999-2011 Gentoo Foundation; Distributed under the GPL v2
 # $Header: /var/cvsroot/gentoo-x86/app-misc/workrave/ChangeLog,v 1.67 2010/07/09 09:13:18 pacho Exp $
+
+*workrave-1.9.3 (31 Jan 2011)
+
+  31 Jan 2011; Andrew John Hughes <andrew@gentoo.org> +workrave-1.9.3.ebuild:
+  Support workrave 1.9.3.
 
 *workrave-1.9.2 (14 Dec 2010)
 
