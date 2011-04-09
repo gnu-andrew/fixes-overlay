@@ -118,7 +118,7 @@ kde_pkg_setup() {
 	fi
 
 	if [[ "${PN}" = "kdelibs" ]]; then
-		use doc && if ! built_with_use =x11-libs/qt-3* doc ; then
+		use doc && if ! built_with_use =x11-libs/qt-meta-3* doc ; then
 			eerror "Building kdelibs with the doc USE flag requires qt to be built with the doc USE flag."
 			eerror "Please re-emerge qt-3 with this USE flag enabled."
 		fi
@@ -153,6 +153,7 @@ kde_src_unpack() {
 # This function also handles the linguas if extragear-like packaging is enabled.
 # (See USE_KEG_PACKAGING)
 kde_src_prepare() {
+	debug-print-function $FUNCNAME "$@"
 	local PATCHDIR="${WORKDIR}/patches/"
 
 	# Unpack first and deal with KDE patches after examing possible patch sets.

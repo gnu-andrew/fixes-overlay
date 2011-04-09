@@ -21,6 +21,66 @@ if [[ -z "$KMNAME" ]]; then
 	die "kde-meta.eclass inherited but KMNAME not defined - broken ebuild"
 fi
 
+# Replace the $myPx mess - it was ugly as well as not general enough for 3.4.0-rc1
+# The following code should set TARBALLVER (the version in the tarball's name)
+# and TARBALLDIRVER (the version of the toplevel directory inside the tarball).
+case "$PV" in
+	3.5.0_beta2)		TARBALLDIRVER="3.4.92"; TARBALLVER="3.4.92" ;;
+	3.5.0_rc1)		TARBALLDIRVER="3.5.0"; TARBALLVER="3.5.0_rc1" ;;
+	*)				TARBALLDIRVER="$PV"; TARBALLVER="$PV" ;;
+esac
+if [[ "${KMNAME}" = "koffice" ]]; then
+	case "$PV" in
+		1.6_beta1)	TARBALLDIRVER="1.5.91"; TARBALLVER="1.5.91" ;;
+		1.6_rc1)	TARBALLDIRVER="1.5.92"; TARBALLVER="1.5.92" ;;
+		1.6.3_p*)	TARBALLDIRVER="1.6.3"; TARBALLVER="${PV}" ;;
+	esac
+fi
+
+TARBALL="$KMNAME-$TARBALLVER.tar.bz2"
+
+# BEGIN adapted from kde-dist.eclass, code for older versions removed for cleanness
+if [[ "$KDEBASE" = "true" ]]; then
+	unset SRC_URI
+
+	need-kde $PV
+
+	DESCRIPTION="KDE ${PV} - "
+	HOMEPAGE="http://www.kde.org/"
+	LICENSE="GPL-2"
+	SLOT="$KDEMAJORVER.$KDEMINORVER"
+
+	# Main tarball for normal downloading style
+	# Note that we set SRC_PATH, and add it to SRC_URI later on
+	case "$PV" in
+		3.5.0_*)	SRC_PATH="mirror://kde/unstable/${PV/.0_/-}/src/$TARBALL" ;;
+		3.5_*)		SRC_PATH="mirror://kde/unstable/${PV/_/-}/src/$TARBALL" ;;
+		3.5.0)		SRC_PATH="mirror://kde/stable/3.5/src/$TARBALL" ;;
+		3*)		SRC_PATH="mirror://kde/stable/$TARBALLVER/src/$TARBALL" ;;
+		*)		die "$ECLASS: Error: unrecognized version $PV, could not set SRC_URI" ;;
+	esac
+
+elif [[ "$KMNAME" == "koffice" ]]; then
+	SRC_PATH="mirror://kde/stable/koffice-$PV/src/koffice-$PV.tar.bz2"
+	case $PV in
+		1.3.5)
+			SRC_PATH="mirror://kde/stable/koffice-$PV/src/koffice-$PV.tar.bz2"
+			;;
+		1.6_beta1)
+			SRC_PATH="mirror://kde/unstable/koffice-${PV/_/-}/koffice-${TARBALLVER}.tar.bz2"
+			;;
+		1.6.3_p*) SRC_PATH="mirror://gentoo/${TARBALL}"
+			;;
+		*)
+			# Identify beta and rc versions by underscore
+			if [[ ${PV/_/} != ${PV} ]]; then
+				SRC_PATH="mirror://kde/unstable/koffice-${PV/_/-}/src/koffice-${TARBALLVER}.tar.bz2"
+			fi
+			;;
+	esac
+fi
+
+SRC_URI="$SRC_URI $SRC_PATH"
 
 debug-print "$ECLASS: finished, SRC_URI=$SRC_URI"
 
@@ -231,6 +291,42 @@ kde-meta_src_unpack() {
 	case $section in
 	unpack)
 
+		# kdepim packages all seem to rely on libkdepim/kdepimmacros.h
+		# also, all kdepim Makefile.am's reference doc/api/Doxyfile.am
+		if [[ "$KMNAME" == "kdepim" ]]; then
+			KMEXTRACTONLY="$KMEXTRACTONLY libkdepim/kdepimmacros.h doc/api"
+		fi
+
+		# Create final list of stuff to extract
+		extractlist=""
+		for item in admin Makefile.am Makefile.am.in configure.in.in configure.in.mid configure.in.bot \
+					acinclude.m4 aclocal.m4 AUTHORS COPYING INSTALL README NEWS ChangeLog \
+					$KMMODULE $KMEXTRA $KMCOMPILEONLY $KMEXTRACTONLY $DOCS
+		do
+			extractlist="$extractlist $KMNAME-$TARBALLDIRVER/${item%/}"
+		done
+
+		# $KMTARPARAMS is also available for an ebuild to use; currently used by kturtle
+		TARFILE=$DISTDIR/$TARBALL
+		KMTARPARAMS="$KMTARPARAMS -j"
+		cd "${WORKDIR}"
+
+		echo ">>> Unpacking parts of ${TARBALL} to ${WORKDIR}"
+		# Note that KMTARPARAMS is also used by an ebuild
+		tar -xpf $TARFILE $KMTARPARAMS $extractlist	2> /dev/null
+
+		[[ -n ${A/${TARBALL}/} ]] && unpack ${A/${TARBALL}/}
+
+		# Avoid syncing if possible
+		# No idea what the above comment means...
+		if [[ -n "$RAWTARBALL" ]]; then
+			rm -f "${T}"/$RAWTARBALL
+		fi
+
+		# Default $S is based on $P not $myP; rename the extracted dir to fit $S
+		mv $KMNAME-$TARBALLDIRVER $P || die "mv $KMNAME-$TARBallDIRVER failed."
+		S="${WORKDIR}"/${P}
+
 		# Copy over KMCOPYLIB items
 		libname=""
 		for x in $KMCOPYLIB; do
@@ -260,22 +356,37 @@ kde-meta_src_unpack() {
 			sed -i -e s:"bin_SCRIPTS = startkde.*"::g "${S}"/Makefile.am.in
 		fi
 
-		# for ebuilds with extended src_unpack
-		cd "${S}"
-
 	;;
 	makefiles)
 
-		# Create Makefile.am files
-		create_fullpaths
-		change_makefiles "${S}" "false"
-
-		# for ebuilds with extended src_unpack
-		cd "${S}"
+		case ${EAPI:-0} in
+			0|1) kde-meta_src_prepare ;;
+		esac
 
 	;;
 	esac
 	done
+
+	# for ebuilds with extended src_unpack
+	cd "${S}"
+}
+
+# @FUNCTION: kde-meta_src_prepare
+# @DESCRIPTION:
+# Source tree preparation compatible with eapi 2
+kde-meta_src_prepare() {
+	debug-print-function $FUNCNAME "$@"
+
+	set_common_variables
+
+	case ${EAPI:-0} in
+		0|1) ;; # Don't call kde_src_prepare, as kde_src_unpack already did so
+		*) kde_src_prepare ;;
+	esac
+
+	# Create Makefile.am files
+	create_fullpaths
+	change_makefiles "${S}" "false"
 }
 
 # @FUNCTION: kde-meta_src_configure
@@ -348,5 +459,5 @@ kde-meta_src_install() {
 }
 case ${EAPI:-0} in
 	0|1) EXPORT_FUNCTIONS src_unpack src_compile src_install;;
-	2) EXPORT_FUNCTIONS src_unpack src_configure src_compile src_install;;
+	2) EXPORT_FUNCTIONS src_unpack src_prepare src_configure src_compile src_install;;
 esac
