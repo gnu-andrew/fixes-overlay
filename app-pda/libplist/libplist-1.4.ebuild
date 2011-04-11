@@ -33,7 +33,7 @@ pkg_setup() {
 
 src_prepare() {
 	sed -i -e 's:-Werror::' swig/CMakeLists.txt || die
-	epatch "${FILESDIR}/${P}-gcc-4.6.patch"
+	epatch "${FILESDIR}/${P}-gcc4.6.patch"
 }
 
 src_configure() {
