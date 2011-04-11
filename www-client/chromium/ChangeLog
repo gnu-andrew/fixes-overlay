@@ -7,31 +7,6 @@
 *.svn/text-base/chromium-11.0.696.28 (10 Apr 2011)
 
   10 Apr 2011; Andrew John Hughes <andrew@gentoo.org>
-  +.svn/text-base/chromium-11.0.696.28.ebuild.svn-base,
-  +.svn/text-base/chromium-12.0.712.0.ebuild.svn-base, +.svn/entries,
-  +.svn/text-base/ChangeLog.svn-base, +.svn/text-base/Manifest.svn-base,
-  +.svn/text-base/metadata.xml.svn-base, +files/.svn/entries,
-  +files/.svn/text-base/chromium.xml.svn-base,
-  +files/.svn/text-base/chromium-browser.xml.svn-base,
-  +files/.svn/text-base/chromium-ffmpeg-build-r0.patch.svn-base,
-  +files/.svn/text-base/chromium-gcc46.patch.svn-base,
-  +files/.svn/text-base/chromium-gecko-mediaplayer-r0.patch.svn-base,
-  +files/.svn/text-base/chromium-gecko-mediaplayer-r1.patch.svn-base,
-  +files/.svn/text-base/chromium-launcher.sh.svn-base,
-  +files/.svn/text-base/chromium-launcher-r1.sh.svn-base,
-  +files/.svn/text-base/chromium-system-flac-r0.patch.svn-base,
-  +files/.svn/text-base/chromium-system-icu-r0.patch.svn-base,
-  +files/.svn/text-base/chromium-system-speex-r0.patch.svn-base,
-  +files/.svn/text-base/chromium-system-vpx-r1.patch.svn-base,
-  +files/.svn/text-base/chromium-system-vpx-r2.patch.svn-base,
-  +files/.svn/text-base/chromium-system-vpx-r3.patch.svn-base,
-  +files/.svn/text-base/chromium-system-vpx-r4.patch.svn-base,
-  +files/.svn/text-base/chromium-system-xdg-utils-r0.patch.svn-base,
-  +files/.svn/text-base/chromium-webkit-version.patch.svn-base,
-  +files/.svn/text-base/experimental.gyp.svn-base,
-  +files/.svn/text-base/flac.gyp.svn-base,
-  +files/.svn/text-base/speex.gyp.svn-base,
-  +files/.svn/text-base/v8.gyp.svn-base, +files/chromium.xml,
   +files/chromium-browser.xml, +files/chromium-ffmpeg-build-r0.patch,
   +files/chromium-gcc46.patch, +files/chromium-gecko-mediaplayer-r0.patch,
   +files/chromium-gecko-mediaplayer-r1.patch, +files/chromium-launcher.sh,
@@ -42,8 +17,7 @@
   +files/chromium-system-xdg-utils-r0.patch,
   +files/chromium-webkit-version.patch, +files/experimental.gyp,
   +files/flac.gyp, +files/speex.gyp, +files/v8.gyp,
-  .svn/text-base/chromium-11.0.696.28.ebuild, +chromium-11.0.696.34-r1.ebuild,
-  .svn/text-base/chromium-12.0.712.0.ebuild, +metadata.xml:
+  +chromium-11.0.696.34.ebuild, +metadata.xml:
   Add missing ptrdiff_t cases that need cstddef inclusion.
 
   02 Apr 2011; Pawel Hajdan jr <phajdan.jr@gentoo.org>
