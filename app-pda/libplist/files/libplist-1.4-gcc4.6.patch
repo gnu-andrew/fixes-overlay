@@ -1,0 +1,10 @@
+--- swig/plist.i~	2011-03-20 16:45:21.000000000 +0000
++++ swig/plist.i	2011-04-11 13:02:33.000000000 +0100
+@@ -24,6 +24,7 @@
+ #if SWIGPYTHON
+ //for datetime in python
+ %{
++#include <cstddef>
+ #include <ctime>
+ #include <datetime.h>
+ %}
