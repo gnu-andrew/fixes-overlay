@@ -7,7 +7,7 @@
   11 Apr 2011; Andrew John Hughes <andrew@gentoo.org>
   +files/inkscape-0.47-gcc45.patch, +files/inkscape-0.47-poppler.patch,
   +files/inkscape-0.48.0-poppler-0.16.patch,
-  +files/inkscape-0.48.0-spell.patch, +inkscape-0.48.1-r1.ebuild,
+  +files/inkscape-0.48.0-spell.patch, +inkscape-0.48.1.ebuild,
   +files/inkscape-0.48.1-gcc46.patch, +files/inkscape-0.48.1-lcms.patch,
   +files/inkscape-0.48.1-libpng15.patch, +metadata.xml:
   Fix Inkscape build with gcc 4.6.0.
