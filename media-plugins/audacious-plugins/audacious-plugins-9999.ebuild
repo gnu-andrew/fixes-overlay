@@ -21,7 +21,7 @@ lame libnotify libsamplerate lirc midi mms mp3 mtp nls oss pulseaudio scrobbler 
 RDEPEND="app-arch/unzip
 	>=dev-libs/dbus-glib-0.60
 	dev-libs/libxml2:2
-	>=media-sound/audacious-2.5.0
+	>=media-sound/audacious-9999
 	>=net-libs/neon-0.26.4
 	>=x11-libs/gtk+-2.14:2
 	aac? ( >=media-libs/faad2-2.7 )
