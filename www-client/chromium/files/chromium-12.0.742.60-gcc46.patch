@@ -1,0 +1,10 @@
+--- ppapi/cpp/paint_aggregator.h~	2011-05-18 09:01:10.000000000 +0100
++++ ppapi/cpp/paint_aggregator.h	2011-05-24 14:21:35.000000000 +0100
+@@ -5,6 +5,7 @@
+ #ifndef PPAPI_CPP_PAINT_AGGREGATOR_H_
+ #define PPAPI_CPP_PAINT_AGGREGATOR_H_
+ 
++#include <cstddef>
+ #include <vector>
+ 
+ #include "ppapi/cpp/point.h"
