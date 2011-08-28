@@ -1,0 +1,87 @@
+--- abiword-2.8.6.orig/src/af/util/xp/ut_png.cpp	2008-02-24 03:33:07.000000000 +0000
++++ abiword-2.8.6/src/af/util/xp/ut_png.cpp	2011-08-28 02:47:53.000000000 +0100
+@@ -71,7 +71,7 @@
+ 	 * the normal method of doing things with libpng).  REQUIRED unless you
+ 	 * set up your own error handlers in the png_create_read_struct() earlier.
+ 	 */
+-	if (setjmp(png_ptr->jmpbuf))
++	if (setjmp(png_jmpbuf(png_ptr)))
+ 	{
+ 		/* Free all of the memory associated with the png_ptr and info_ptr */
+ 		png_destroy_read_struct(&png_ptr, &info_ptr, static_cast<png_infopp>(NULL));
+--- abiword-2.8.6.orig/src/wp/impexp/gtk/ie_impGraphic_GdkPixbuf.cpp	2009-07-01 05:02:04.000000000 +0100
++++ abiword-2.8.6/src/wp/impexp/gtk/ie_impGraphic_GdkPixbuf.cpp	2011-08-28 03:21:39.000000000 +0100
+@@ -185,7 +185,7 @@
+ /** needed for the stejmp context */
+ UT_Error IE_ImpGraphic_GdkPixbuf::_png_write(GdkPixbuf * pixbuf)
+ {
+-	if (setjmp(m_pPNG->jmpbuf))
++	if (setjmp(png_jmpbuf(m_pPNG)))
+ 	{
+ 		DELETEP(m_pPngBB);
+ 		png_destroy_write_struct(&m_pPNG, &m_pPNGInfo);
+@@ -446,7 +446,7 @@
+ 	 * the normal method of doing things with libpng).  REQUIRED unless you
+ 	 * set up your own error handlers in the png_create_read_struct() earlier.
+ 	 */
+-	if (setjmp(m_pPNG->jmpbuf))
++	if (setjmp(png_jmpbuf(m_pPNG)))
+ 	{
+ 		/* Free all of the memory associated with the png_ptr and info_ptr */
+ 		png_destroy_write_struct(&m_pPNG, &m_pPNGInfo);
+--- abiword-2.8.6.orig/plugins/bmp/xp/ie_impGraphic_BMP.cpp	2009-06-25 05:02:06.000000000 +0100
++++ abiword-2.8.6/plugins/bmp/xp/ie_impGraphic_BMP.cpp	2011-08-28 19:49:10.000000000 +0100
+@@ -191,7 +191,6 @@
+ 
+ 	/* Clean Up Memory Used */
+ 		
+-	FREEP(m_pPNGInfo->palette);
+ 	DELETEP(pBB);
+ 	png_destroy_write_struct(&m_pPNG, &m_pPNGInfo);
+    
+@@ -313,7 +312,7 @@
+ 	 * the normal method of doing things with libpng).  REQUIRED unless you
+ 	 * set up your own error handlers in the png_create_read_struct() earlier.
+ 	 */
+-	if (setjmp(m_pPNG->jmpbuf))
++	if (setjmp(png_jmpbuf(m_pPNG)))
+ 	{
+ 		/* Free all of the memory associated with the png_ptr and info_ptr */
+ 		png_destroy_write_struct(&m_pPNG, &m_pPNGInfo);
+@@ -332,7 +331,7 @@
+ 	UT_Error IE_ImpGraphic_BMP::Convert_BMP_Pallet(UT_ByteBuf* pBB)
+ 	{
+ 		/* Reset error handling for libpng */
+-		if (setjmp(m_pPNG->jmpbuf))
++		if (setjmp(png_jmpbuf(m_pPNG)))
+ 		{
+ 			png_destroy_write_struct(&m_pPNG, &m_pPNGInfo);
+ 			return UT_ERROR;
+@@ -365,6 +364,7 @@
+ 	if (iOffset > m_iOffset) return UT_IE_BOGUSDOCUMENT;
+ 
+ 	png_set_PLTE( m_pPNG, m_pPNGInfo, palette, numClrs );
++	png_data_freer( m_pPNG, m_pPNGInfo, PNG_DESTROY_WILL_FREE_DATA, PNG_FREE_PLTE );
+ 
+ 	return UT_OK;
+ }
+@@ -372,7 +372,7 @@
+ UT_Error IE_ImpGraphic_BMP::Convert_BMP(UT_ByteBuf* pBB)
+ {
+ 	/* Reset error handling for libpng */
+-	if (setjmp(m_pPNG->jmpbuf))
++	if (setjmp(png_jmpbuf(m_pPNG)))
+ 	{
+ 		png_destroy_write_struct(&m_pPNG, &m_pPNGInfo);
+ 		return UT_ERROR;
+--- abiword-2.8.6.orig/plugins/garble/xp/abiword-garble-png.cpp	2009-09-05 16:34:44.000000000 +0100
++++ abiword-2.8.6/plugins/garble/xp/abiword-garble-png.cpp	2011-08-28 03:30:49.000000000 +0100
+@@ -79,7 +79,7 @@
+ 		png_set_strip_alpha( png_ptr );
+ 		png_set_interlace_handling( png_ptr );
+ 		png_set_bgr( png_ptr );
+-		rowbytes = info_ptr->rowbytes;
++		rowbytes = png_get_rowbytes(png_ptr, info_ptr);
+ 		png_destroy_read_struct( &png_ptr, &info_ptr, NULL );
+ 	}
+ 

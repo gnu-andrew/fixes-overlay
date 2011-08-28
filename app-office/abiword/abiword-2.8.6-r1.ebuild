@@ -127,6 +127,7 @@ src_prepare() {
 		-i user/wp/Makefile.am user/wp/Makefile.in || die "sed 2 failed"
 
 	epatch "${FILESDIR}/gcc46.patch"
+	epatch "${FILESDIR}/png15.patch"
 }
 
 src_install() {
