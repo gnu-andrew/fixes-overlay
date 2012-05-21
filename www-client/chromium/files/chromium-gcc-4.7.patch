@@ -1,0 +1,51 @@
+--- seccompsandbox/library.h~	2012-04-18 14:03:20.000000000 +0100
++++ seccompsandbox/library.h	2012-04-25 15:32:33.019790673 +0100
+@@ -11,6 +11,7 @@
+ #include <set>
+ #include <string>
+ #include <string.h>
++#include <unistd.h>
+ #include <sys/mman.h>
+ 
+ #include "maps.h"
+--- ipc/ipc_channel.h~	2012-04-18 14:02:04.000000000 +0100
++++ ipc/ipc_channel.h	2012-04-25 15:34:07.717316174 +0100
+@@ -7,6 +7,7 @@
+ #pragma once
+ 
+ #include <string>
++#include <unistd.h>
+ 
+ #include "base/compiler_specific.h"
+ #include "ipc/ipc_channel_handle.h"
+--- ipc/ipc_platform_file.cc~	2012-04-18 14:02:04.000000000 +0100
++++ ipc/ipc_platform_file.cc	2012-04-25 15:45:26.208246091 +0100
+@@ -4,7 +4,7 @@
+ 
+ #include "ipc/ipc_platform_file.h"
+ 
+-#if defined(OS_ANDROID)
++#if defined(OS_ANDROID) || defined(OS_POSIX)
+ #include <unistd.h>
+ #endif
+ 
+--- chrome/browser/policy/policy_path_parser_linux.cc~	2012-04-18 14:02:15.000000000 +0100
++++ chrome/browser/policy/policy_path_parser_linux.cc	2012-04-25 16:10:31.600496578 +0100
+@@ -3,6 +3,7 @@
+ // found in the LICENSE file.
+ 
+ #include <pwd.h>
++#include <unistd.h>
+ 
+ #include "chrome/browser/policy/policy_path_parser.h"
+ 
+--- base/message_pump_libevent.cc.orig	2012-04-18 14:01:57.000000000 +0100
++++ base/message_pump_libevent.cc	2012-04-25 15:47:38.438376159 +0100
+@@ -6,6 +6,7 @@
+ 
+ #include <errno.h>
+ #include <fcntl.h>
++#include <unistd.h>
+ 
+ #include "base/auto_reset.h"
+ #include "base/compiler_specific.h"
