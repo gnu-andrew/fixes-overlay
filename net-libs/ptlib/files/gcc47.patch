@@ -9,3 +9,14 @@
      }
  };
  
+--- include/ptlib/safecoll.h
++++ include/ptlib/safecoll.h
+@@ -782,6 +782,6 @@
+      */
+     PSafePtr & operator=(T * obj)
+       {
+-        Assign(obj);
++        this->Assign(obj);
+         return *this;
+       }
+

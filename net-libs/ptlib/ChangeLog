@@ -2,6 +2,10 @@
 # Copyright 1999-2012 Gentoo Foundation; Distributed under the GPL v2
 # $Header: /var/cvsroot/gentoo-x86/net-libs/ptlib/ChangeLog,v 1.35 2012/06/17 16:24:29 armin76 Exp $
 
+  24 Sep 2012; Andrew John Hughes <andrew@gentoo.org> files/gcc47.patch:
+  Add additional GCC 4.7 case found when building Opal (fix from
+  https://bugs.gentoo.org/show_bug.cgi?id=420077)
+
   17 Jun 2012; Raúl Porcel <armin76@gentoo.org> ptlib-2.6.7-r1.ebuild:
   ia64/sparc stable wrt #397617
 
