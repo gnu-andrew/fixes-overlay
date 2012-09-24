@@ -1,44 +1,50 @@
 # Copyright 1999-2012 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /var/cvsroot/gentoo-x86/net-libs/opal/opal-3.6.7.ebuild,v 1.3 2010/02/28 10:43:09 pva Exp $
+# $Header: /var/cvsroot/gentoo-x86/net-libs/opal/opal-3.6.8-r2.ebuild,v 1.8 2012/06/17 16:26:12 armin76 Exp $
 
-EAPI="2"
+EAPI="4"
 
 inherit eutils autotools toolchain-funcs java-pkg-opt-2 flag-o-matic
 
+HTMLV="3.6.7" # There is no 3.6.8 release of htmldoc
 DESCRIPTION="C++ class library normalising numerous telephony protocols"
 HOMEPAGE="http://www.opalvoip.org/"
 SRC_URI="mirror://sourceforge/opalvoip/${P}.tar.bz2
-	doc? ( mirror://sourceforge/opalvoip/${P}-htmldoc.tar.bz2 )"
+	doc? ( mirror://sourceforge/opalvoip/${PN}-${HTMLV}-htmldoc.tar.bz2 )"
 
 LICENSE="MPL-1.0"
 SLOT="0"
-KEYWORDS="~alpha ~amd64 ~ia64 ~ppc ~sparc ~x86"
+KEYWORDS="~alpha ~amd64 ~ia64 ~ppc ~ppc64 ~sparc ~x86"
 IUSE="+audio capi celt debug doc dtmf examples fax ffmpeg h224 h281 h323 iax
-ilbc ipv6 ivr ixj java ldap lid +plugins sbc sip sipim srtp ssl stats swig theora
-+video vpb vxml wav x264 x264-static xml"
+ilbc ipv6 ivr ixj java ldap lid +plugins sbc sip sipim srtp ssl static-libs
+stats swig theora +video vpb vxml wav x264 x264-static xml"
+
+REQUIRED_USE="x264-static? ( x264 )
+	h281? ( h224 )"
 
 RDEPEND=">=net-libs/ptlib-2.6.6[stun,debug=,audio?,dtmf?,ipv6?,ldap?,ssl?,video?,vxml?,wav?,xml?]
 	>=media-libs/speex-1.2_beta
 	fax? ( net-libs/ptlib[asn] )
 	h323? ( net-libs/ptlib[asn] )
-	ivr? ( net-libs/ptlib[xml,vxml] )
+	ivr? ( net-libs/ptlib[http,xml,vxml] )
 	java? ( >=virtual/jre-1.4 )
-	plugins? ( ilbc? ( dev-libs/ilbc-rfc3951 )
+	plugins? (
 		media-sound/gsm
 		capi? ( net-dialup/capi4k-utils )
-		celt? ( >=media-libs/celt-0.5.0 )
-		ffmpeg? ( >=media-video/ffmpeg-0.5[encode] )
+		celt? ( media-libs/celt )
+		ffmpeg? ( virtual/ffmpeg[encode] )
 		ixj? ( sys-kernel/linux-headers )
+		ilbc? ( dev-libs/ilbc-rfc3951 )
 		sbc? ( media-libs/libsamplerate )
 		theora? ( media-libs/libtheora )
-		x264? (	>=media-video/ffmpeg-0.4.7
+		x264? (	virtual/ffmpeg
 			media-libs/x264 ) )
-	srtp? ( net-libs/libsrtp )"
+	srtp? ( net-libs/libsrtp )
+	vxml? ( net-libs/ptlib[http,vxml] )"
 DEPEND="${RDEPEND}
 	virtual/pkgconfig
 	>=sys-devel/gcc-3
-	java? ( swig? ( || ( dev-lang/swig[java] >dev-lang/swig-1.3.36 ) )
+	java? ( swig? ( dev-lang/swig )
 		>=virtual/jdk-1.4 )"
 
 # NOTES:
@@ -55,21 +61,15 @@ pkg_setup() {
 	# workaround for bug 282838
 	append-flags "-fno-visibility-inlines-hidden"
 
+	# Upstream fixed this in trunk
+	# http://opalvoip.svn.sourceforge.net/viewvc/opalvoip?view=revision&revision=25165
+	append-flags -D__STDC_CONSTANT_MACROS #324323
+
 	# need >=gcc-3
 	if [[ $(gcc-major-version) -lt 3 ]]; then
 		eerror "You need to use gcc-3 at least."
 		eerror "Please change gcc version with 'gcc-config'."
 		die "You need to use gcc-3 at least."
-	fi
-
-	if use h281 && ! use h224; then
-		ewarn "You have enabled h281 but h224 is disabled."
-		ewarn "H.281 is over H.224 so you should enable h224 if you want h281."
-	fi
-
-	if use x264-static && ! use x264; then
-		ewarn "You have enabled x264-static but x264 is disabled."
-		ewarn "x264-static is going to be useless if x264 is not enabled."
 	fi
 
 	java-pkg-opt-2_pkg_setup
@@ -87,8 +87,10 @@ src_prepare() {
 	# upstream patch 2808915
 	epatch "${FILESDIR}"/${PN}-3.6.4-jdkroot.patch
 
-	epatch "${FILESDIR}/${P}-celt-0.7-update.patch"
-	epatch "${FILESDIR}/${P}-nonfree-ilbc.patch"
+	epatch "${FILESDIR}"/${P}-build-fix.patch #343041
+	epatch "${FILESDIR}"/${P}-ldflags.patch
+	epatch "${FILESDIR}"/${P}-lid-plugins-ldflags.patch #397681
+	epatch "${FILESDIR}"/${P}-gcc-4.7.patch # 422635
 
 	# h224 really needs h323 ?
 	# TODO: get a confirmation in ml
@@ -144,6 +146,8 @@ src_prepare() {
 	if ! use swig; then
 		sed -i -e "/^SWIG=/d" configure || die "patching configure failed"
 	fi
+
+	use ilbc || { rm -r plugins/audio/iLBC/ || die "removing iLBC failed"; }
 
 	java-pkg-opt-2_src_prepare
 }
@@ -212,7 +216,6 @@ src_configure() {
 		$(use_enable vpb) \
 		$(use_enable x264 h264) \
 		$(use_enable x264-static x264-link-static) \
-		$(use_enable ilbc) \
 		${forcedconf}
 }
 
@@ -226,6 +229,12 @@ src_compile() {
 
 src_install() {
 	emake DESTDIR="${D}" install || die "emake install failed"
+
+	# Get rid of static libraries if not requested
+	# There seems to be no easy way to disable this in the build system
+	if ! use static-libs; then
+		rm -v "${D}"/usr/lib*/*.a || die
+	fi
 
 	if use doc; then
 		dohtml -r "${WORKDIR}"/html/* docs/* || die "dohtml failed"

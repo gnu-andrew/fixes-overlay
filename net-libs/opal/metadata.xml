@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE pkgmetadata SYSTEM "http://www.gentoo.org/dtd/metadata.dtd">
 <pkgmetadata>
-	<herd>voip</herd>
-	<maintainer>
+<herd>voip</herd>
+<maintainer>
         <email>volkmar@gentoo.org</email>
         <name>Mounir Lamouri</name>
-    </maintainer>
+	<description>Assign to herd and CC me</description>
+</maintainer>
 	<use> 
 		<flag name="audio">Enable audio support</flag>
 		<flag name="capi">Enable CAPI support</flag>
@@ -17,6 +18,7 @@
 		<flag name="h323">Enable H.323 protocol</flag>
 		<flag name="iax">Enable Inter-Asterisk eXchange protocol</flag>
 		<flag name="ivr">Enable Interactive Voice Response</flag>
+		<flag name="ilbc">Enable iLBC (RFC 3951) speech codec</flag>
 		<flag name="ixj">Enable xJack cards support</flag>
 		<flag name="lid">Enable Line Interface Device</flag>
 		<flag name="plugins">Enable plugins support</flag>
@@ -33,9 +35,6 @@
 		<flag name="wav">Enable WAVFILE support</flag>
 		<flag name="x264-static">Install x264 plugin statically linked with x264
 		</flag>
-		<!-- for 2.* -->
-		<flag name="noaudio">Disable audio codecs</flag>
-		<flag name="novideo">Disable video codecs</flag>
 		<!-- unused atm
 		<flag name="g711plc">Enable G711 Packet Loss Concealment</flag>
 		<flag name="msrp">Enable Message Session Relay Protocol</flag>
