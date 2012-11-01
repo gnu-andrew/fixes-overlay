@@ -1,6 +1,13 @@
 # ChangeLog for dev-libs/icu
-# Copyright 1999-2009 Gentoo Foundation; Distributed under the GPL v2
+# Copyright 1999-2012 Gentoo Foundation; Distributed under the GPL v2
 # $Header: /var/cvsroot/gentoo-x86/dev-libs/icu/ChangeLog,v 1.86 2009/05/12 15:22:41 arfrever Exp $
+
+*icu-50_rc-r1 (01 Nov 2012)
+
+  01 Nov 2012; Andrew John Hughes <andrew@gentoo.org>
+  +files/icu-4.8.1.1-fix_ltr.patch, +files/icu-4.8.1-fix_binformat_fonts.patch,
+  +files/icu-no-cxx11.patch, +icu-50_rc-r1.ebuild:
+  Remove addition of -std=c++11 to C++ flags so dependencies don't break.
 
 *icu-4.2 (12 May 2009)
 
