@@ -57,7 +57,7 @@ src_prepare() {
 	sed -i -e 's:python:python2:' scripts/sync-palm-jppy.py || die
 
 	epatch "${FILESDIR}"/${P}-gold.patch ;
-	if has_version >=dev-libs/gdl-3.6 ; then
+	if has_version ">=dev-libs/gdl-3.6" ; then
 	  epatch "${FILESDIR}"/${P}-gdl-3.6.patch
 	fi
 	eautoreconf
