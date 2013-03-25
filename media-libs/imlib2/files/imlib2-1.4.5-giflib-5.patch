@@ -1,0 +1,14 @@
+--- src/modules/loaders/loader_gif.c~	2011-04-15 23:05:28.000000000 +0100
++++ src/modules/loaders/loader_gif.c	2013-02-15 00:18:24.440134248 +0000
+@@ -36,7 +36,11 @@
+ #endif
+    if (fd < 0)
+       return 0;
++#ifdef GIFLIB_MAJOR >= 5
++   gif = DGifOpenFileHandle(fd, NULL);
++#else
+    gif = DGifOpenFileHandle(fd);
++#endif
+    if (!gif)
+      {
+         close(fd);

@@ -1,0 +1,35 @@
+--- khtml/imload/decoders/gifloader.cpp~	2013-01-23 21:44:22.000000000 +0000
++++ khtml/imload/decoders/gifloader.cpp	2013-02-15 00:47:22.395324905 +0000
+@@ -303,7 +303,11 @@
+     static unsigned int decode16Bit(char* signedLoc)
+     {
+         unsigned char* loc = reinterpret_cast<unsigned char*>(signedLoc);
+-    
++	return decode16Bit(loc);
++    }
++
++    static unsigned int decode16Bit(unsigned char* loc)
++    {
+         //GIFs are little-endian
+         return loc[0] | (((unsigned int)loc[1]) << 8);
+     }
+@@ -348,10 +348,18 @@
+     virtual int processEOF()
+     {
+         //Feed the buffered data to libUnGif
+-        GifFileType* file = DGifOpen(this, gifReaderBridge);
++#ifdef GIFLIB_MAJOR >= 5
++        int error = 0;
++        GifFileType* file = DGifOpen(this, gifReaderBridge, &error);
+         
++	if (error)
++	    return Error;
++#else
++        GifFileType* file = DGifOpen(this, gifReaderBridge);
++
+         if (!file)
+             return Error;
++#endif
+         
+         if (DGifSlurp(file) == GIF_ERROR)
+         {

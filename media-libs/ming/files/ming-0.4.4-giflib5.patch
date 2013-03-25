@@ -1,0 +1,93 @@
+--- configure.in~	2011-10-26 08:29:42.000000000 +0100
++++ configure.in	2013-02-15 03:00:05.747542263 +0000
+@@ -276,7 +276,7 @@
+ fi
+ 
+ dnl Check for the gif or ungif libraries
+-AC_CHECK_LIB(gif, PrintGifError, GIFLIB="-lgif", GIFLIB="")
++AC_CHECK_LIB(gif, DGifOpen, GIFLIB="-lgif", GIFLIB="")
+ dnl MinGW check for libungif
+ AC_CHECK_LIB(ungif, DGifOpen, GIFLIB="-lungif")
+ dnl Solaris needs -lX11 on the linker line for ungif to work
+--- src/blocks/gifdbl.c.orig	2013-02-15 03:23:09.725437146 +0000
++++ src/blocks/gifdbl.c	2013-02-15 03:23:33.821816418 +0000
+@@ -227,7 +227,11 @@
+ 	SWFDBLBitmapData ret;
+ 	struct dbl_data gifdata;
+ 
++#if GIFLIB_MAJOR >= 5
++	if((file = DGifOpenFileName(fileName, NULL)) == NULL)
++#else
+ 	if((file = DGifOpenFileName(fileName)) == NULL)
++#endif
+ 		return NULL;
+ 	if(!readGif(file, &gifdata))
+ 		return NULL;
+@@ -246,7 +250,11 @@
+ 	SWFDBLBitmapData ret;
+ 	struct dbl_data gifdata;
+ 
++#if GIFLIB_MAJOR >= 5
++	if((file = DGifOpen(input, (InputFunc) gifReadFunc, NULL)) == NULL)
++#else
+ 	if((file = DGifOpen(input, (InputFunc) gifReadFunc)) == NULL)
++#endif
+ 		return NULL;
+ 	if(!readGif(file, &gifdata))
+ 		return NULL;
+--- util/gif2dbl.c.orig	2013-02-15 03:23:18.757579286 +0000
++++ util/gif2dbl.c	2013-02-15 03:23:25.069678638 +0000
+@@ -20,7 +20,9 @@
+ void error(char *msg)
+ {
+   printf("%s:\n\n", msg);
++#if GIFLIB_MAJOR < 5
+   PrintGifError();
++#endif
+   exit(-1);
+ }
+ 
+@@ -57,8 +59,15 @@
+   unsigned char *p;
+   int i, nColors, size, alpha, bgColor, alignedWidth;
+ 
++#if GIFLIB_MAJOR >= 5
++  int errorCode = 0;
++
++  if((file = DGifOpenFileName(fileName, &errorCode)) == NULL)
++    error(GifErrorString(errorCode));
++#else
+   if((file = DGifOpenFileName(fileName)) == NULL)
+     error("Error opening file");
++#endif
+ 
+   if(DGifSlurp(file) != GIF_OK)
+     error("Error slurping file");
+--- util/gif2mask.c~	2011-10-26 07:33:18.000000000 +0100
++++ util/gif2mask.c	2013-02-15 03:19:09.185663108 +0000
+@@ -14,7 +14,9 @@
+ void error(char *msg)
+ {
+   printf("%s:\n\n", msg);
++#if GIFLIB_MAJOR < 5
+   PrintGifError();
++#endif
+   exit(-1);
+ }
+ 
+@@ -26,8 +28,15 @@
+   unsigned char *data;
+   int i, nColors, size;
+ 
++#if GIFLIB_MAJOR < 5
+   if((file = DGifOpenFileName(fileName)) == NULL)
+     error("Error opening file");
++#else
++  int errorCode = 0;
++
++  if((file = DGifOpenFileName(fileName, &errorCode)) == NULL)
++    error(GifErrorString(errorCode));
++#endif
+ 
+   if(DGifSlurp(file) != GIF_OK)
+     error("Error slurping file");
