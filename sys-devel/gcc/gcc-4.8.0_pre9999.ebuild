@@ -18,7 +18,7 @@ IUSE="debug nobootstrap offline"
 
 RDEPEND=""
 DEPEND="${RDEPEND}
-	amd64? ( multilib? ( gcj? ( app-emulation/emul-linux-x86-xlibs ) ) )
+	amd64? ( multilib? ( gcj? ( app-emulation/emul-linux-x86-xlibs app-emulation/emul-linux-x86-soundlibs ) ) )
 	>=${CATEGORY}/binutils-2.18"
 
 if [[ ${CATEGORY} != cross-* ]] ; then
