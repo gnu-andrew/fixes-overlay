@@ -40,7 +40,7 @@ REQUIRED_USE="
 # glibc-2.12 needed for SCHED_IDLE (see bug #385003)
 RDEPEND="
 	>=app-i18n/enca-1.9
-	>=dev-db/sqlite-3.7.14:=[threadsafe]
+	>=dev-db/sqlite-3.7.14:=[threadsafe(+)]
 	>=dev-libs/glib-2.28:2
 	>=dev-libs/gobject-introspection-0.9.5
 	>=dev-libs/icu-4:=
@@ -95,7 +95,7 @@ RDEPEND="
 		>=mail-client/thunderbird-5.0
 		>=mail-client/thunderbird-bin-5.0 ) )
 	tiff? ( media-libs/tiff )
-	upnp-av? ( >=media-libs/gupnp-dlna-0.5 )
+	upnp-av? ( >=media-libs/gupnp-dlna-0.5:1.0 )
 	vorbis? ( >=media-libs/libvorbis-0.22 )
 	xine? ( >=media-libs/xine-lib-1 )
 	xml? ( >=dev-libs/libxml2-2.6 )
@@ -181,7 +181,6 @@ src_prepare() {
 		vala_src_prepare
 	fi
 	gnome2_src_prepare
-
 
 	epatch "${FILESDIR}/${PN}-0.14.4-giflib5.patch"
 }
