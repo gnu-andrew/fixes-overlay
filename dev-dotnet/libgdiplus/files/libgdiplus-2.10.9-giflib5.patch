@@ -1,0 +1,142 @@
+--- src/gifcodec.c.old	2013-04-03 22:21:02.445579277 +0100
++++ src/gifcodec.c	2013-04-03 23:27:15.661484979 +0100
+@@ -40,7 +40,14 @@
+ #include "gifcodec.h"
+ 
+ /* giflib declares this incorrectly as EgifOpen */
++#if GIFLIB_MAJOR >= 5
++#define MakeMapObject GifMakeMapObject
++#define FreeMapObject GifFreeMapObject
++#define QuantizeBuffer GifQuantizeBuffer
++#define BitSize GifBitSize
++#else
+ extern GifFileType *EGifOpen(void *userData, OutputFunc writeFunc);
++#endif
+ 
+ /* Data structure used for callback */
+ typedef struct
+@@ -98,6 +105,8 @@
+ 	return read;
+ }
+ 
++#if GIFLIB_MAJOR >= 5
++#else
+ /*
+    This is the DGifSlurp and AddExtensionBlock code courtesy of giflib, 
+    It's modified to not dump comments after the image block, since those 
+@@ -149,6 +158,7 @@
+ 	GdipFree((char *)Image->ExtensionBlocks);
+ 	Image->ExtensionBlocks = NULL;
+ }
++#endif
+ 
+ static int
+ gif_read_interlace (GifFileType* GifFile, SavedImage *sp, int start, int increment)
+@@ -162,6 +172,9 @@
+ 	return GIF_OK;
+ }
+ 
++#if GIFLIB_MAJOR >= 5
++#define DGifSlurpMono(x,y) DGifSlurp(x)
++#else
+ static int
+ DGifSlurpMono(GifFileType * GifFile, SavedImage *TrailingExtensions)
+ {
+@@ -269,6 +282,7 @@
+ 
+ 	return (GIF_OK);
+ }
++#endif
+ 
+ static GpStatus 
+ gdip_load_gif_image (void *stream, GpImage **image, BOOL from_file)
+@@ -304,9 +318,17 @@
+ 	loop_counter = FALSE;
+ 
+ 	if (from_file) {
++#if GIFLIB_MAJOR >= 5
++	        gif = DGifOpen(stream, &gdip_gif_fileinputfunc, NULL);
++#else
+ 		gif = DGifOpen(stream, &gdip_gif_fileinputfunc);
++#endif
+ 	} else {
++#if GIFLIB_MAJOR >= 5
++	        gif = DGifOpen (stream, &gdip_gif_inputfunc, NULL);
++#else
+ 		gif = DGifOpen (stream, &gdip_gif_inputfunc);
++#endif
+ 	}
+ 	
+ 	if (gif == NULL) {
+@@ -412,8 +434,13 @@
+ 			goto error;
+ 		}
+ 
++#if GIFLIB_MAJOR >= 5
++		for (l = 0; l < gif->ExtensionBlockCount; l++) {
++			ExtensionBlock eb = gif->ExtensionBlocks[l];
++#else
+ 		for (l = 0; l < global_extensions.ExtensionBlockCount; l++) {
+ 			ExtensionBlock eb = global_extensions.ExtensionBlocks[l];
++#endif
+ 			if (eb.Function == COMMENT_EXT_FUNC_CODE) {
+ 				int	index;
+ 
+@@ -580,7 +607,11 @@
+ 		GdipFree(global_palette);
+ 	}
+ 
++#if GIFLIB_MAJOR >= 5
++	GifFreeExtensions(&(gif->ExtensionBlockCount), &(gif->ExtensionBlocks));
++#else
+ 	FreeExtensionMono(&global_extensions);
++#endif
+ 	DGifCloseFile (gif);
+ 
+ 	*image = result;
+@@ -596,7 +627,11 @@
+ 	}
+ 
+ 	if (gif != NULL) {
++#if GIFLIB_MAJOR >= 5
++	        GifFreeExtensions(&(gif->ExtensionBlockCount), &(gif->ExtensionBlocks));
++#else
+ 		FreeExtensionMono (&global_extensions);
++#endif
+ 		DGifCloseFile (gif);
+ 	}
+ 
+@@ -661,9 +696,17 @@
+ 	}
+ 
+ 	if (from_file) {
++#if GIFLIB_MAJOR >= 5
++	        fp = EGifOpenFileName (stream, 0, NULL);
++#else
+ 		fp = EGifOpenFileName (stream, 0);
++#endif
+ 	} else {
++#if GIFLIB_MAJOR >= 5
++	        fp = EGifOpen (stream, gdip_gif_outputfunc, NULL);
++#else
+ 		fp = EGifOpen (stream, gdip_gif_outputfunc);
++#endif
+ 	}
+ 		
+ 	if (!fp) {
+@@ -848,8 +891,15 @@
+ 						Buffer[0] = 1;
+ 						Buffer[1] = ptr[0];
+ 						Buffer[2] = ptr[1];
++#if GIFLIB_MAJOR >= 5
++						EGifPutExtensionLeader(fp, APPLICATION_EXT_FUNC_CODE);
++						EGifPutExtensionBlock(fp, 11, "NETSCAPE2.0");
++						EGifPutExtensionBlock(fp, 3, Buffer);
++						EGifPutExtensionTrailer(fp);
++#else
+ 						EGifPutExtensionFirst(fp, APPLICATION_EXT_FUNC_CODE, 11, "NETSCAPE2.0");
+ 						EGifPutExtensionLast(fp, APPLICATION_EXT_FUNC_CODE, 3, Buffer);
++#endif
+ 					}
+ 				}
+ 
