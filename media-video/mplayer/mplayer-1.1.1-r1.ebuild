@@ -1,6 +1,6 @@
 # Copyright 1999-2013 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /var/cvsroot/gentoo-x86/media-video/mplayer/mplayer-1.1-r1.ebuild,v 1.20 2013/02/08 13:41:43 aballier Exp $
+# $Header: /var/cvsroot/gentoo-x86/media-video/mplayer/mplayer-1.1.1-r1.ebuild,v 1.10 2013/06/29 18:26:54 ago Exp $
 
 EAPI=4
 
@@ -16,10 +16,9 @@ directfb doc +dts +dv dvb +dvd +dvdnav dxr3 +enca +encode faac +faad fbcon
 ftp gif ggi gsm +iconv ipv6 jack joystick jpeg jpeg2k kernel_linux ladspa
 +libass libcaca libmpeg2 lirc +live lzo mad md5sum +mmx mmxext mng +mp3 nas
 +network nut openal +opengl +osdmenu oss png pnm pulseaudio pvr +quicktime
-radio +rar +real +rtc rtmp samba +shm sdl +speex sse sse2 ssse3
+radio +rar +rtc rtmp samba +shm sdl +speex sse sse2 ssse3
 tga +theora +tremor +truetype +toolame +twolame +unicode v4l vdpau vidix
-+vorbis +X +x264 xanim xinerama +xscreensaver +xv +xvid xvmc
-zoran"
++vorbis +X +x264 xanim xinerama +xscreensaver +xv +xvid xvmc zoran"
 
 VIDEO_CARDS="s3virge mga tdfx"
 for x in ${VIDEO_CARDS}; do
@@ -62,11 +61,6 @@ RDEPEND+="
 	app-arch/bzip2
 	sys-libs/zlib
 	>=virtual/ffmpeg-0.10.3
-	!bindist? (
-		x86? (
-			win32codecs? ( media-libs/win32codecs )
-		)
-	)
 	a52? ( media-libs/a52dec )
 	aalib? ( media-libs/aalib )
 	alsa? ( media-libs/alsa-lib )
@@ -98,7 +92,7 @@ RDEPEND+="
 	iconv? ( virtual/libiconv )
 	jack? ( media-sound/jack-audio-connection-kit )
 	jpeg? ( virtual/jpeg )
-	jpeg2k? ( media-libs/openjpeg )
+	jpeg2k? ( media-libs/openjpeg:0 )
 	ladspa? ( media-libs/ladspa-sdk )
 	libass? ( >=media-libs/libass-0.9.10[enca?] )
 	libcaca? ( media-libs/libcaca )
@@ -162,7 +156,7 @@ DEPEND="${RDEPEND}
 SLOT="0"
 LICENSE="GPL-2"
 if [[ ${PV} != *9999* ]]; then
-	KEYWORDS="~amd64"
+	KEYWORDS="alpha amd64 arm hppa ia64 ppc ppc64 sparc x86 ~x86-fbsd ~amd64-linux ~x86-linux ~ppc-macos ~x64-macos ~x86-macos ~sparc-solaris ~x86-solaris"
 else
 	KEYWORDS=""
 fi
@@ -175,7 +169,7 @@ fi
 # libvorbis require external tremor to work
 # radio requires oss or alsa backend
 # xvmc requires xvideo support
-REQUIRED_USE="bindist? ( !faac !win32codecs )
+REQUIRED_USE="bindist? ( !faac )
 	dvdnav? ( dvd )
 	libass? ( truetype )
 	truetype? ( iconv )
@@ -193,9 +187,9 @@ REQUIRED_USE="bindist? ( !faac !win32codecs )
 
 PATCHES=(
 	"${FILESDIR}/${PN}-1.0_rc4-pkg-config.patch"
-	"${FILESDIR}/${P}-ffmpeg.patch"
-	"${FILESDIR}/${P}-libav-0.8.patch"
-	"${FILESDIR}/${P}-codecid.patch"
+	"${FILESDIR}/${PN}-1.1-ffmpeg.patch"
+	"${FILESDIR}/${PN}-1.1-libav-0.8.patch"
+	"${FILESDIR}/${PN}-1.1-codecid.patch"
 )
 
 pkg_setup() {
@@ -269,13 +263,19 @@ src_prepare() {
 
 	base_src_prepare
 	if has_version '>=media-video/libav-9_rc' || has_version '>=media-video/ffmpeg-1.1' ; then
-		epatch "${FILESDIR}/${P}-libav-9.patch" \
-			"${FILESDIR}/${P}-planaraudio.patch" \
-			"${FILESDIR}/${P}-missingbreak.patch"
+		epatch "${FILESDIR}/${PN}-1.1-libav-9.patch" \
+			"${FILESDIR}/${PN}-1.1-planaraudio.patch" \
+			"${FILESDIR}/${PN}-1.1-missingbreak.patch" \
+			"${FILESDIR}/${PN}-1.1.1-avcodecidsubrip.patch"
+	elif has_version '>=media-video/ffmpeg-1' ; then
+		epatch "${FILESDIR}/${PN}-1.1.1-codecidsubrip.patch"
 	fi
 	if has_version ">=media-libs/giflib-5" ; then
 		epatch "${FILESDIR}/${PN}-giflib5.patch"
 	fi
+
+	# Use sane default for >=virtual/udev-197
+	sed -i -e '/default_dvd_device/s:/dev/dvd:/dev/cdrom:' configure || die
 }
 
 src_configure() {
@@ -408,7 +408,7 @@ src_configure() {
 		use ${i} || myconf+=" --disable-lib${i}"
 	done
 
-	uses="faad jpeg libmpeg2 live mad mng png pnm speex tga theora xanim"
+	uses="faad gif jpeg libmpeg2 live mad mng png pnm speex tga theora xanim"
 	for i in ${uses}; do
 		use ${i} || myconf+=" --disable-${i}"
 	done
@@ -447,22 +447,8 @@ src_configure() {
 	# Binary codecs #
 	#################
 	# bug 213836
-	if ! use x86 || ! use win32codecs; then
-		use quicktime || myconf+=" --disable-qtx"
-	fi
-
-	######################
-	# RealPlayer support #
-	######################
-	# Realplayer support shows up in four places:
-	# - libavcodec (internal)
-	# - win32codecs
-	# - realcodecs (win32codecs libs)
-	# - realcodecs (realplayer libs)
-
-	# internal
-	use real || myconf+=" --disable-real"
-	myconf+=" $(use_enable win32codecs win32dll)"
+	use quicktime || myconf+=" --disable-qtx"
+	myconf+=" --disable-real --disable-win32dll"
 
 	################
 	# Video Output #
@@ -608,10 +594,6 @@ src_install() {
 	dodoc DOCS/tech/{*.txt,MAINTAINERS,mpsub.sub,playtree,TODO,wishlist}
 	docinto TOOLS/
 	dodoc -r TOOLS
-	if use real; then
-		docinto tech/realcodecs/
-		dodoc DOCS/tech/realcodecs/*
-	fi
 	docinto tech/mirrors/
 	dodoc DOCS/tech/mirrors/*
 
