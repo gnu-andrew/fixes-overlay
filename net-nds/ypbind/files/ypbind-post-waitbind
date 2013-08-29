@@ -21,7 +21,7 @@ SECONDS=0
 retval=0
 while [ $SECONDS -lt $timeout ] || [ $firsttime -eq 1 ] ; do
 firsttime=0
-if /usr/sbin/rpcinfo -p | LC_ALL=C fgrep -q ypbind
+if /sbin/rpcinfo -p | LC_ALL=C fgrep -q ypbind
 then
     rpcbound=1
     /usr/bin/ypwhich > /dev/null 2>&1

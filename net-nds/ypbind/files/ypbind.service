@@ -6,11 +6,11 @@ After=syslog.target network.target rpcbind.service ypserv.service NetworkManager
 Before=systemd-user-sessions.service
 
 [Service]
-Type=notify
-NotifyAccess=all
+Type=forking
+PIDFile=/run/ypbind.pid
 EnvironmentFile=-/etc/conf.d/ypbind
 ExecStartPre=/usr/libexec/ypbind-pre-setdomain
-ExecStart=/usr/sbin/ypbind -n $YPBIND_OPTS
+ExecStart=/usr/sbin/ypbind $YPBIND_OPTS
 ExecStartPost=/usr/libexec/ypbind-post-waitbind
 PrivateTmp=true
 

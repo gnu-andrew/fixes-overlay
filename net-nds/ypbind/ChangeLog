@@ -2,6 +2,10 @@
 # Copyright 1999-2013 Gentoo Foundation; Distributed under the GPL v2
 # $Header: /var/cvsroot/gentoo-x86/net-nds/ypbind/ChangeLog,v 1.75 2012/06/27 18:13:20 kensington Exp $
 
+  29 Aug 2013; Andrew John Hughes <gnu_andrew@member.fsf.org>
+  files/ypbind.service, files/ypbind-post-waitbind:
+  Fix differences between Fedora and Gentoo ypbind setup.
+
 *ypbind-1.33-r1 (29 Aug 2013)
 
   29 Aug 2013; Andrew John Hughes <gnu_andrew@member.fsf.org>
