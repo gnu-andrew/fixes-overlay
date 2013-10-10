@@ -1,4 +1,4 @@
-# Copyright 1999-2011 Gentoo Foundation
+# Copyright 1999-2013 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 # $Header: /var/cvsroot/gentoo-x86/media-plugins/audacious-plugins/audacious-plugins-2.5.0.ebuild,v 1.1 2011/04/16 20:37:09 chainsaw Exp $
 
@@ -14,7 +14,7 @@ EHG_REPO_URI="http://hg.atheme.org/audacious-plugins"
 
 LICENSE="GPL-2"
 SLOT="0"
-KEYWORDS="~alpha ~amd64 ~hppa ~ppc ~ppc64 ~sparc ~x86 ~x86-fbsd ~x86-freebsd ~x86-interix ~amd64-linux ~x86-linux"
+KEYWORDS=""
 IUSE="aac adplug alsa aqua bs2b cdda cue ffmpeg flac fluidsynth gnome ipv6 jack
 lame libnotify libsamplerate lirc midi mms mp3 mtp nls oss pulseaudio scrobbler sdl sid sndfile sse2 vorbis wavpack"
 
@@ -55,7 +55,7 @@ RDEPEND="app-arch/unzip
 
 DEPEND="${RDEPEND}
 	nls? ( dev-util/intltool )
-	>=dev-util/pkgconfig-0.9.0"
+	virtual/pkgconfig"
 
 mp3_warning() {
 	if ! use mp3 ; then
@@ -64,7 +64,6 @@ mp3_warning() {
 }
 
 src_prepare() {
-	cd "${S}"
 	./autogen.sh
 }
 

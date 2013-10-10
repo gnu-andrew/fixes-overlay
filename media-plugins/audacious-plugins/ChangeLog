@@ -1,6 +1,11 @@
 # ChangeLog for media-plugins/audacious-plugins
-# Copyright 1999-2011 Gentoo Foundation; Distributed under the GPL v2
+# Copyright 1999-2013 Gentoo Foundation; Distributed under the GPL v2
 # $Header: /var/cvsroot/gentoo-x86/media-plugins/audacious-plugins/ChangeLog,v 1.208 2011/04/29 17:45:37 xarthisius Exp $
+
+  10 Oct 2013; Andrew John Hughes <gnu_andrew@member.fsf.org>
+  audacious-plugins-9999.ebuild:
+  Drop keywords for live ebuild & redundant cd ${S}.  Use virtual/pkgconfig and
+  updated copyright.
 
   29 Apr 2011; Kacper Kowalik <xarthisius@gentoo.org>
   audacious-plugins-2.4.4-r1.ebuild:
@@ -1135,4 +1140,3 @@
   18 Sep 2006; Tony Vroon <chainsaw@gentoo.org> +metadata.xml,
   +audacious-plugins-1.2.0.ebuild:
   Initial commit, ebuild by me.
-
