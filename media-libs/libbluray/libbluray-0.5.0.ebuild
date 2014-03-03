@@ -1,6 +1,6 @@
 # Copyright 1999-2014 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /var/cvsroot/gentoo-x86/media-libs/libbluray/libbluray-0.3.0-r1.ebuild,v 1.5 2013/06/25 12:51:43 ago Exp $
+# $Header: /var/cvsroot/gentoo-x86/media-libs/libbluray/libbluray-0.5.0.ebuild,v 1.1 2013/12/22 11:03:46 radhermit Exp $
 
 EAPI=5
 
@@ -8,8 +8,7 @@ inherit autotools java-pkg-opt-2 flag-o-matic eutils
 
 DESCRIPTION="Blu-ray playback libraries"
 HOMEPAGE="http://www.videolan.org/developers/libbluray.html"
-SRC_URI="http://ftp.videolan.org/pub/videolan/libbluray/${PV}/${P}.tar.bz2
-	java? ( http://dev.gentoo.org/~radhermit/dist/${P}-java.patch.bz2 )"
+SRC_URI="http://ftp.videolan.org/pub/videolan/libbluray/${PV}/${P}.tar.bz2"
 
 LICENSE="LGPL-2.1"
 SLOT="0"
@@ -40,12 +39,10 @@ DEPEND="
 	${COMMON_DEPEND}
 	java? (
 		truetype? ( media-libs/freetype:2 )
-		${JDK_DEPEND}
 		dev-java/ant-core
 	)
 	virtual/pkgconfig
 "
-REQUIRED_USE="utils? ( static-libs )"
 
 DOCS=( ChangeLog README.txt )
 
@@ -62,9 +59,6 @@ pkg_setup() {
 src_prepare() {
 	if use java ; then
 		export JDK_HOME="$(java-config -g JAVA_HOME)"
-
-		# upstream 0.3.0 tarball is missing a lot of java files
-		EPATCH_OPTS="-p1" epatch "${WORKDIR}"/${P}-java.patch
 
 		# don't install a duplicate jar file
 		sed -i '/^jar_DATA/d' src/Makefile.am || die
@@ -96,17 +90,17 @@ src_install() {
 	default
 
 	if use utils; then
-		cd src/examples/
-		dobin clpi_dump index_dump mobj_dump mpls_dump sound_dump
+		cd src
+		dobin index_dump mobj_dump mpls_dump
 		cd .libs/
-		dobin bd_info bdsplice hdmv_test libbluray_test list_titles
+		dobin bd_info bdsplice clpi_dump hdmv_test libbluray_test list_titles sound_dump
 		if use java; then
 			dobin bdj_test
 		fi
 	fi
 
 	if use java; then
-		java-pkg_dojar "${S}/src/.libs/${PN}.jar"
+		java-pkg_dojar "${S}"/src/.libs/${PN}.jar
 		doenvd "${FILESDIR}"/90${PN}
 	fi
 
