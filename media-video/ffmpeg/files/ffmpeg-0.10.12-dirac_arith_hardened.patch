@@ -1,0 +1,19 @@
+--- libavcodec/dirac_arith.h.old	2014-06-04 05:35:18.427992624 +0100
++++ libavcodec/dirac_arith.h	2014-06-04 05:36:15.276792368 +0100
+@@ -28,6 +28,7 @@
+ #ifndef AVCODEC_DIRAC_ARITH_H
+ #define AVCODEC_DIRAC_ARITH_H
+ 
++#include "libavutil/x86_cpu.h"
+ #include "bytestream.h"
+ #include "get_bits.h"
+ 
+@@ -134,7 +135,7 @@
+ 
+     range_times_prob = (c->range * prob_zero) >> 16;
+ 
+-#if HAVE_FAST_CMOV
++#if HAVE_FAST_CMOV && HAVE_6REGS
+     low   -= range_times_prob << 16;
+     range -= range_times_prob;
+     bit = 0;
