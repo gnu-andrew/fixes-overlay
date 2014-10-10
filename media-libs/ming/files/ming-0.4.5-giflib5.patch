@@ -1,0 +1,102 @@
+diff -Nru ming-0.4.5.orig/src/blocks/gifdbl.c ming-0.4.5/src/blocks/gifdbl.c
+--- ming-0.4.5.orig/src/blocks/gifdbl.c	2010-10-10 08:19:23.000000000 +0100
++++ ming-0.4.5/src/blocks/gifdbl.c	2014-10-10 21:01:36.698475948 +0100
+@@ -227,7 +227,11 @@
+ 	SWFDBLBitmapData ret;
+ 	struct dbl_data gifdata;
+ 
++#if GIFLIB_MAJOR >= 5
++	if((file = DGifOpenFileName(fileName, NULL)) == NULL)
++#else
+ 	if((file = DGifOpenFileName(fileName)) == NULL)
++#endif
+ 		return NULL;
+ 	if(!readGif(file, &gifdata))
+ 		return NULL;
+@@ -246,7 +250,11 @@
+ 	SWFDBLBitmapData ret;
+ 	struct dbl_data gifdata;
+ 
++#if GIFLIB_MAJOR >= 5
++	if((file = DGifOpen(input, (InputFunc) gifReadFunc, NULL)) == NULL)
++#else
+ 	if((file = DGifOpen(input, (InputFunc) gifReadFunc)) == NULL)
++#endif
+ 		return NULL;
+ 	if(!readGif(file, &gifdata))
+ 		return NULL;
+diff -Nru ming-0.4.5.orig/util/gif2dbl.c ming-0.4.5/util/gif2dbl.c
+--- ming-0.4.5.orig/util/gif2dbl.c	2013-06-08 15:08:51.000000000 +0100
++++ ming-0.4.5/util/gif2dbl.c	2014-10-10 21:01:36.698475948 +0100
+@@ -22,7 +22,9 @@
+ void error(char *msg)
+ {
+   printf("%s:\n\n", msg);
++#if GIFLIB_MAJOR < 5
+   PrintGifError();
++#endif
+   exit(-1);
+ }
+ 
+@@ -59,8 +61,15 @@
+   unsigned char *p;
+   int i, nColors, size, alpha, bgColor, alignedWidth;
+ 
++#if GIFLIB_MAJOR >= 5
++  int errorCode = 0;
++
++  if((file = DGifOpenFileName(fileName, &errorCode)) == NULL)
++    error(GifErrorString(errorCode));
++#else
+   if((file = DGifOpenFileName(fileName)) == NULL)
+     error("Error opening file");
++#endif
+ 
+   if(DGifSlurp(file) != GIF_OK)
+     error("Error slurping file");
+diff -Nru ming-0.4.5.orig/util/gif2mask.c ming-0.4.5/util/gif2mask.c
+--- ming-0.4.5.orig/util/gif2mask.c	2013-06-08 15:08:51.000000000 +0100
++++ ming-0.4.5/util/gif2mask.c	2014-10-10 21:01:36.698475948 +0100
+@@ -16,7 +16,9 @@
+ void error(char *msg)
+ {
+   printf("%s:\n\n", msg);
++#if GIFLIB_MAJOR < 5
+   PrintGifError();
++#endif
+   exit(-1);
+ }
+ 
+@@ -28,8 +30,15 @@
+   unsigned char *data;
+   int i, nColors, size;
+ 
++#if GIFLIB_MAJOR < 5
+   if((file = DGifOpenFileName(fileName)) == NULL)
+     error("Error opening file");
++#else
++  int errorCode = 0;
++
++  if((file = DGifOpenFileName(fileName, &errorCode)) == NULL)
++    error(GifErrorString(errorCode));
++#endif
+ 
+   if(DGifSlurp(file) != GIF_OK)
+     error("Error slurping file");
+--- ming-0.4.5.orig/src/libming.h	2014-10-10 21:15:36.618122945 +0100
++++ ming-0.4.5/work/ming-0.4.5/src/libming.h	2014-10-10 21:15:29.322022171 +0100
+@@ -78,6 +78,7 @@
+ 
+ #ifdef HAVE_GIF_LIB_H
+ #include <gif_lib.h>
++#if GIFLIB_MAJOR < 5
+ static void
+ PrintGifError(void)
+ {
+@@ -88,5 +89,6 @@
+ #endif
+ }
+ #endif
++#endif
+ 
+ #endif /* SWF_LIBMING_H_INCLUDED */

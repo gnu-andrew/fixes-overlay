@@ -1,6 +1,13 @@
 # ChangeLog for media-libs/ming
-# Copyright 1999-2013 Gentoo Foundation; Distributed under the GPL v2
+# Copyright 1999-2014 Gentoo Foundation; Distributed under the GPL v2
 # $Header: /var/cvsroot/gentoo-x86/media-libs/ming/ChangeLog,v 1.102 2012/12/30 14:18:49 kensington Exp $
+
+*ming-0.4.5 (10 Oct 2014)
+
+  10 Oct 2014; Andrew John Hughes <gnu_andrew@member.fsf.org>
+  +files/ming-0.4.5-gif-error.patch, +files/ming-0.4.5-giflib5.patch,
+  +ming-0.4.5.ebuild:
+  Add fixed version of latest ming 0.4.5 ebuild.
 
   21 Mar 2013; Andrew John Hughes <andrew@gentoo.org>
   +files/ming-0.4.3-perl-5.14.patch, +ming-0.4.4.ebuild,
