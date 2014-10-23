@@ -4,7 +4,8 @@
 	<herd>chromium</herd>
 	<longdescription>Chromium is the open-source web browser project behind Google Chrome</longdescription>
 	<use>
-		<flag name="gecko-mediaplayer">Allow the browser to load
-			<pkg>www-plugins/gecko-mediaplayer</pkg></flag>
+		<flag name="bindist">Disable patent-encumbered HTML5 video codecs</flag>
+		<flag name="pic">Disable optimized assembly code that is not PIC friendly</flag>
+		<flag name="tcmalloc">Use bundled tcmalloc instead of system malloc.</flag>
 	</use>
 </pkgmetadata>
