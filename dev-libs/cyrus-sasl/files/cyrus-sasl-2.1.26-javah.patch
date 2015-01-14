@@ -1,0 +1,12 @@
+diff -Nru java.orig/CyrusSasl/Makefile.am java/CyrusSasl/Makefile.am
+--- java.orig/CyrusSasl/Makefile.am	2012-01-27 23:31:36.000000000 +0000
++++ java/CyrusSasl/Makefile.am	2015-01-12 02:56:18.870190550 +0000
+@@ -49,7 +49,7 @@
+ $(srcdir)/javasasl.c: javasasl.h
+ 
+ javasasl.h: $(CLASSES)
+-	$(CLASSPATH_ENV) $(JAVAH) -o $@ -jni $(patsubst %.class,CyrusSasl.%,$^)
++	$(CLASSPATH_ENV) $(JAVAH) -cp $(CLASSPATH_ENV) -o $@ -jni $(patsubst %.class,CyrusSasl.%,$^)
+ 
+ # force build of class files
+ $(CLASSES): classjavasasl.stamp
