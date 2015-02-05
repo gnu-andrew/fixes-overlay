@@ -1,4 +1,4 @@
-# Copyright 1999-2014 Gentoo Foundation
+# Copyright 1999-2015 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 # $Header: /var/cvsroot/gentoo-x86/media-libs/imlib/imlib-1.9.15-r4.ebuild,v 1.2 2014/04/18 14:58:35 hasufell Exp $
 
@@ -40,6 +40,7 @@ src_prepare() {
 	epatch "${FILESDIR}"/${P}-asneeded.patch #207638
 	epatch "${FILESDIR}"/${P}-libpng15.patch #357167
 	epatch "${FILESDIR}"/${PN}-giflib5.patch
+	epatch "${FILESDIR}"/${PN}-giflib5.1.patch
 
 	mkdir m4 && cp "${WORKDIR}"/gtk-1-for-imlib.m4 m4
 

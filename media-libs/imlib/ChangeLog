@@ -1,6 +1,10 @@
 # ChangeLog for media-libs/imlib
-# Copyright 1999-2014 Gentoo Foundation; Distributed under the GPL v2
+# Copyright 1999-2015 Gentoo Foundation; Distributed under the GPL v2
 # $Header: /var/cvsroot/gentoo-x86/media-libs/imlib/ChangeLog,v 1.80 2014/04/18 14:58:35 hasufell Exp $
+
+  05 Feb 2015; Andrew John Hughes <gnu_andrew@member.fsf.org>
+  +files/imlib-giflib5.1.patch, imlib-1.9.15-r4.ebuild:
+  Add support for giflib 5.1; #538976
 
   18 Apr 2014; Julian Ospald <hasufell@gentoo.org> imlib-1.9.15-r4.ebuild:
   add app-emulation/emul-linux-x86-gtklibs blocker
