@@ -1,0 +1,31 @@
+--- ming-0.4.5.orig/src/blocks/gifdbl.c.old	2015-02-02 23:37:44.122545935 +0000
++++ ming-0.4.5/src/blocks/gifdbl.c	2015-02-05 01:17:30.385571838 +0000
+@@ -203,7 +203,13 @@
+ 	}
+ 
+ 	/* Done! */
++#if GIFLIB_MAJOR >= 5 && GIFLIB_MINOR >= 1
++	int error = 0;
++	if (DGifCloseFile(file, &error) != GIF_OK)
++	    return 0;
++#else
+ 	DGifCloseFile(file);
++#endif
+ 
+ 	result->data = malloc(outsize = (int)floor(size*1.01+12));
+ 
+--- ming-0.4.5.orig/util/gif2dbl.c.old	2015-02-05 01:26:59.471550225 +0000
++++ ming-0.4.5/util/gif2dbl.c	2015-02-05 01:26:34.759116917 +0000
+@@ -199,7 +199,12 @@
+   }
+ 
+ 	/* Done! */
++#if GIFLIB_MAJOR >= 5 && GIFLIB_MINOR >= 1
++  if (DGifCloseFile(file, &errorCode) != GIF_OK)
++    error(GifErrorString(errorCode));
++#else
+   DGifCloseFile(file);
++#endif
+ 
+   *length = size;
+   return data;
