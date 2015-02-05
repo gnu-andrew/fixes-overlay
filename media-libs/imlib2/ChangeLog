@@ -1,6 +1,15 @@
 # ChangeLog for media-libs/imlib2
-# Copyright 1999-2013 Gentoo Foundation; Distributed under the GPL v2
+# Copyright 1999-2015 Gentoo Foundation; Distributed under the GPL v2
 # $Header: /var/cvsroot/gentoo-x86/media-libs/imlib2/ChangeLog,v 1.115 2012/09/29 18:40:34 armin76 Exp $
+
+*imlib2-1.4.6-r2 (05 Feb 2015)
+
+  05 Feb 2015; Andrew John Hughes <gnu_andrew@member.fsf.org>
+  +files/imlib2-1.4.5-no-my-libs.patch, +files/imlib2-1.4.6-giflib-5.1.patch,
+  +files/imlib2-1.4.6-no-x.patch, +files/imlib2-1.4.6-out-of-source-build.patch,
+  +imlib2-1.4.6-r2.ebuild, -files/imlib2-1.4.4-libpng-1.5.patch,
+  -imlib2-1.4.5.ebuild, files/imlib2-1.4.5-giflib-5.patch:
+  Update imlib2 ebuild and add giflib 5.1 support; #538948
 
   21 Mar 2013; Andrew John Hughes <andrew@gentoo.org>
   +files/imlib2-1.4.4-libpng-1.5.patch, +imlib2-1.4.5.ebuild,
