@@ -1,0 +1,38 @@
+--- libgdiplus-2.10.9.old/src/gifcodec.c	2015-02-09 16:56:59.549723434 +0000
++++ libgdiplus-2.10.9/src/gifcodec.c	2015-02-09 17:14:01.159636403 +0000
+@@ -899,7 +899,11 @@
+ #else
+ 	FreeExtensionMono(&global_extensions);
+ #endif
++#if GIFLIB_MAJOR > 5 || (GIFLIB_MAJOR == 5 && GIFLIB_MINOR >= 1)
++	DGifCloseFile (gif, NULL);
++#else
+ 	DGifCloseFile (gif);
++#endif
+ 
+ 	*image = result;
+ 	return Ok;
+@@ -919,7 +923,11 @@
+ #else
+ 		FreeExtensionMono (&global_extensions);
+ #endif
++#if GIFLIB_MAJOR > 5 || (GIFLIB_MAJOR == 5 && GIFLIB_MINOR >= 1)
++		DGifCloseFile (gif, NULL);
++#else
+ 		DGifCloseFile (gif);
++#endif
+ 	}
+ 
+ 	*image = NULL;
+@@ -1260,7 +1268,11 @@
+ 		}
+ 	}
+ 
++#if GIFLIB_MAJOR > 5 || (GIFLIB_MAJOR == 5 && GIFLIB_MINOR >= 1)
++	EGifCloseFile (fp, NULL);
++#else
+ 	EGifCloseFile (fp);	
++#endif
+ 	
+ 	return Ok;
+ 
