@@ -1,6 +1,15 @@
 # ChangeLog for net-misc/openvpn
-# Copyright 1999-2014 Gentoo Foundation; Distributed under the GPL v2
+# Copyright 1999-2015 Gentoo Foundation; Distributed under the GPL v2
 # $Header: /var/cvsroot/gentoo-x86/net-misc/openvpn/ChangeLog,v 1.317 2014/12/28 11:33:39 djc Exp $
+
+*openvpn-2.3.6-r2 (01 Apr 2015)
+
+  01 Apr 2015; Andrew John Hughes <gnu_andrew@member.fsf.org>
+  +files/2.3.6-disable-compression.patch, +files/2.3.6-no_des.patch,
+  +files/2.3.6-null-cipher.patch, +openvpn-2.3.6-r2.ebuild,
+  -openvpn-2.3.6.ebuild:
+  Disable DES in OpenVPN when not available in OpenSSL. Turn off HTTP proxy
+  which uses NTLM.
 
   28 Dec 2014; Dirkjan Ochtman <djc@gentoo.org> -openvpn-2.3.2.ebuild,
   -openvpn-2.3.3.ebuild, -openvpn-2.3.4-r1.ebuild, -openvpn-2.3.5.ebuild:
