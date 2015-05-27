@@ -1,17 +1,65 @@
 # ChangeLog for media-libs/ming
 # Copyright 1999-2015 Gentoo Foundation; Distributed under the GPL v2
-# $Header: /var/cvsroot/gentoo-x86/media-libs/ming/ChangeLog,v 1.102 2012/12/30 14:18:49 kensington Exp $
+# $Header: /var/cvsroot/gentoo-x86/media-libs/ming/ChangeLog,v 1.114 2015/03/26 16:07:56 grknight Exp $
+
+  26 Mar 2015; Brian Evans <grknight@gentoo.org> ming-0.4.4-r1.ebuild:
+  Add USE_PHP as the eclass will no longer support an empty/missing value
 
   05 Feb 2015; Andrew John Hughes <gnu_andrew@member.fsf.org>
   +files/ming-0.4.5-giflib5.1.patch, -ming-0.4.4.ebuild, ming-0.4.5.ebuild:
   Fix DGifCloseFile calls so build succeeds with giflib 5.1.0, #538872
 
-*ming-0.4.5 (10 Oct 2014)
+  22 Jan 2015; Brian Evans <grknight@gentoo.org> ming-0.4.5.ebuild:
+  Split the php extension into dev-php/ming-php due to how php ext configure
+  needs the library to exist first
+
+  26 Nov 2014; Andreas K. Huettel <dilfridge@gentoo.org> ming-0.4.4-r1.ebuild,
+  ming-0.4.5.ebuild:
+  Remove call to perl-module_pkg_postinst, does not do anything outside
+  perl-core
+
+  22 Nov 2014; Andreas K. Huettel <dilfridge@gentoo.org> ming-0.4.4-r1.ebuild,
+  ming-0.4.5.ebuild:
+  Remove call to perl-module_pkg_postrm, does not do anything outside perl-core
+  category
+
+  22 Nov 2014; Andreas K. Huettel <dilfridge@gentoo.org> ming-0.4.4-r1.ebuild,
+  ming-0.4.5.ebuild:
+  Remove call to perl-module_pkg_prerm, does not do anything
+
+  16 Nov 2014; Andreas K. Huettel <dilfridge@gentoo.org> ming-0.4.4-r1.ebuild,
+  ming-0.4.5.ebuild:
+  Replace fixlocalpod with perl_delete_localpod
+
+*ming-0.4.4-r1 (09 Nov 2014)
+
+  09 Nov 2014; Mikle Kolyada <zlogene@gentoo.org> +ming-0.4.4-r1.ebuild,
+  -ming-0.4.4.ebuild:
+  Bump to EAPI=5
 
   10 Oct 2014; Andrew John Hughes <gnu_andrew@member.fsf.org>
   +files/ming-0.4.5-gif-error.patch, +files/ming-0.4.5-giflib5.patch,
   +ming-0.4.5.ebuild:
   Add fixed version of latest ming 0.4.5 ebuild.
+
+  31 Aug 2014; Samuli Suominen <ssuominen@gentoo.org> metadata.xml:
+  This package should have had graphics as a backup from the start.
+
+  29 Aug 2014; Ian Stakenvicius (_AxS_) <axs@gentoo.org>
+  +files/ming-0.4.5-gif-error.patch, ming-0.4.5.ebuild:
+  fixed error against giflib-4.2.3, bug 521402
+
+*ming-0.4.5 (27 Aug 2014)
+
+  27 Aug 2014; Ian Stakenvicius (_AxS_) <axs@gentoo.org> +ming-0.4.5.ebuild:
+  version bump, bumped EAPI to 5, migrated ebuild to distutils-r1
+
+  10 Aug 2014; Sergei Trofimovich <slyfox@gentoo.org> ming-0.4.4.ebuild:
+  QA: drop trailing '.' from DESCRIPTION
+
+  03 May 2013; Samuli Suominen <ssuominen@gentoo.org> ming-0.4.4.ebuild:
+  Use AC_CONFIG_HEADERS instead of AM_CONFIG_HEADER for automake-1.13
+  compability.
 
   21 Mar 2013; Andrew John Hughes <andrew@gentoo.org>
   +files/ming-0.4.3-perl-5.14.patch, +ming-0.4.4.ebuild,
