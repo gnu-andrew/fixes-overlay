@@ -1,6 +1,13 @@
 # ChangeLog for www-client/chromium
-# Copyright 1999-2014 Gentoo Foundation; Distributed under the GPL v2
+# Copyright 1999-2015 Gentoo Foundation; Distributed under the GPL v2
 # $Header: /var/cvsroot/gentoo-x86/www-client/chromium/ChangeLog,v 1.324 2011/04/02 13:28:38 phajdan.jr Exp $
+
+*chromium-44.0.2403.30 (03 Jul 2015)
+
+  03 Jul 2015; Andrew John Hughes <gnu_andrew@member.fsf.org>
+  +chromium-44.0.2403.30.ebuild, +files/chromium-hotwording-2403.patch,
+  -chromium-39.0.2171.36.ebuild, metadata.xml:
+  Re-introduce Chromium ebuild with debuginfo disabled on all architectures.
 
 *chromium-39.0.2171.36 (03 Nov 2014)
 

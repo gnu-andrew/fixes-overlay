@@ -1,25 +1,26 @@
-# Copyright 1999-2014 Gentoo Foundation
+# Copyright 1999-2015 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /var/cvsroot/gentoo-x86/www-client/chromium/chromium-39.0.2171.36.ebuild,v 1.1 2014/10/24 00:47:17 floppym Exp $
+# $Header: /var/cvsroot/gentoo-x86/www-client/chromium/chromium-44.0.2403.30.ebuild,v 1.3 2015/06/29 01:30:49 floppym Exp $
 
 EAPI="5"
-PYTHON_COMPAT=( python{2_6,2_7} )
+PYTHON_COMPAT=( python2_7 )
 
 CHROMIUM_LANGS="am ar bg bn ca cs da de el en_GB es es_LA et fa fi fil fr gu he
 	hi hr hu id it ja kn ko lt lv ml mr ms nb nl pl pt_BR pt_PT ro ru sk sl sr
 	sv sw ta te th tr uk vi zh_CN zh_TW"
 
-inherit chromium eutils flag-o-matic multilib multiprocessing pax-utils \
+inherit check-reqs chromium eutils flag-o-matic multilib multiprocessing pax-utils \
 	portability python-any-r1 readme.gentoo toolchain-funcs versionator virtualx
 
 DESCRIPTION="Open-source version of Google Chrome web browser"
 HOMEPAGE="http://chromium.org/"
-SRC_URI="https://commondatastorage.googleapis.com/chromium-browser-official/${P}-lite.tar.xz"
+SRC_URI="https://commondatastorage.googleapis.com/chromium-browser-official/${P}.tar.xz"
 
-LICENSE="BSD"
+LICENSE="BSD hotwording? ( no-source-code )"
 SLOT="0"
 KEYWORDS="~amd64"
-IUSE="bindist cups gnome gnome-keyring kerberos neon pic pulseaudio selinux +tcmalloc"
+IUSE="cups gnome gnome-keyring hidpi hotwording kerberos neon pic +proprietary-codecs pulseaudio selinux +tcmalloc"
+RESTRICT="proprietary-codecs? ( bindist )"
 
 # Native Client binaries are compiled with different set of flags, bug #452066.
 QA_FLAGS_IGNORED=".*\.nexe"
@@ -31,21 +32,16 @@ QA_PRESTRIPPED=".*\.nexe"
 RDEPEND=">=app-accessibility/speech-dispatcher-0.8:=
 	app-arch/bzip2:=
 	app-arch/snappy:=
-	cups? (
-		dev-libs/libgcrypt:0=
-		>=net-print/cups-1.3.11:=
-	)
+	cups? ( >=net-print/cups-1.3.11:= )
 	>=dev-libs/elfutils-0.149
 	dev-libs/expat:=
 	dev-libs/glib:=
-	dev-libs/icu:=
 	>=dev-libs/jsoncpp-0.5.0-r1:=
 	>=dev-libs/libevent-1.4.13:=
 	dev-libs/libxml2:=[icu]
 	dev-libs/libxslt:=
 	dev-libs/nspr:=
 	>=dev-libs/nss-3.14.3:=
-	>=dev-libs/protobuf-2.5.0-r1:=
 	dev-libs/re2:=
 	gnome? ( >=gnome-base/gconf-2.24.0:= )
 	gnome-keyring? ( >=gnome-base/libgnome-keyring-3.12:= )
@@ -58,6 +54,7 @@ RDEPEND=">=app-accessibility/speech-dispatcher-0.8:=
 	>=media-libs/libjpeg-turbo-1.2.0-r1:=
 	media-libs/libpng:0=
 	>=media-libs/libwebp-0.4.0:=
+	>=media-libs/libvpx-1.4.0:=[postproc]
 	media-libs/speex:=
 	pulseaudio? ( media-sound/pulseaudio:= )
 	sys-apps/dbus:=
@@ -82,8 +79,7 @@ RDEPEND=">=app-accessibility/speech-dispatcher-0.8:=
 	x11-libs/libXScrnSaver:=
 	x11-libs/libXtst:=
 	x11-libs/pango:=
-	kerberos? ( virtual/krb5 )
-	selinux? ( sec-policy/selinux-chromium )"
+	kerberos? ( virtual/krb5 )"
 DEPEND="${RDEPEND}
 	!arm? (
 		dev-lang/yasm
@@ -96,6 +92,7 @@ DEPEND="${RDEPEND}
 	>=sys-devel/bison-2.4.3
 	sys-devel/flex
 	virtual/pkgconfig"
+
 # For nvidia-drivers blocker, see bug #413637 .
 RDEPEND+="
 	!=www-client/chromium-9999
@@ -103,6 +100,7 @@ RDEPEND+="
 	x11-misc/xdg-utils
 	virtual/opengl
 	virtual/ttf-fonts
+	selinux? ( sec-policy/selinux-chromium )
 	tcmalloc? ( !<x11-drivers/nvidia-drivers-331.20 )"
 
 # Python dependencies. The DEPEND part needs to be kept in sync
@@ -141,12 +139,29 @@ are not displayed properly:
 Depending on your desktop environment, you may need
 to install additional packages to get icons on the Downloads page.
 
-For KDE, the required package is kde-base/oxygen-icons.
+For KDE, the required package is kde-apps/oxygen-icons.
 
 For other desktop environments, try one of the following:
 - x11-themes/gnome-icon-theme
 - x11-themes/tango-icon-theme
 "
+
+pkg_pretend() {
+	if [[ $(tc-getCC)$ == *gcc* ]] && \
+		[[ $(gcc-major-version)$(gcc-minor-version) -lt 48 ]]; then
+		die 'At least gcc 4.8 is required, see bugs: #535730, #525374, #518668.'
+	fi
+
+	# Check build requirements, bug #541816 and bug #471810 .
+	CHECKREQS_MEMORY="3G"
+	CHECKREQS_DISK_BUILD="5G"
+	eshopts_push -s extglob
+	if is-flagq '-g?(gdb)?([1-9])'; then
+		CHECKREQS_DISK_BUILD="25G"
+	fi
+	eshopts_pop
+	check-reqs_pkg_pretend
+}
 
 pkg_setup() {
 	if [[ "${SLOT}" == "0" ]]; then
@@ -160,12 +175,6 @@ pkg_setup() {
 	python-any-r1_pkg_setup
 
 	chromium_suid_sandbox_check_kernel_config
-
-	if use bindist; then
-		elog "bindist enabled: H.264 video support will be disabled."
-	else
-		elog "bindist disabled: Resulting binaries may not be legal to re-distribute."
-	fi
 }
 
 src_prepare() {
@@ -177,8 +186,8 @@ src_prepare() {
 	#	touch out/Release/gen/sdk/toolchain/linux_x86_newlib/stamp.untar || die
 	# fi
 
-	epatch "${FILESDIR}/${PN}-gcc-4.7-r0.patch"
 	epatch "${FILESDIR}/${PN}-system-jinja-r7.patch"
+	epatch "${FILESDIR}/${PN}-hotwording-2403.patch"
 
 	epatch_user
 
@@ -200,31 +209,36 @@ src_prepare() {
 		'net/third_party/mozilla_security_manager' \
 		'net/third_party/nss' \
 		'third_party/WebKit' \
+		'third_party/analytics' \
 		'third_party/angle' \
 		'third_party/angle/src/third_party/compiler' \
+		'third_party/boringssl' \
 		'third_party/brotli' \
 		'third_party/cacheinvalidation' \
 		'third_party/cld_2' \
 		'third_party/cros_system_api' \
 		'third_party/cython/python_flags.py' \
 		'third_party/dom_distiller_js' \
-		'third_party/dom_distiller_js/package/proto_gen/third_party/dom_distiller_js' \
+		'third_party/dom_distiller_js/dist/proto_gen/third_party/dom_distiller_js' \
 		'third_party/ffmpeg' \
 		'third_party/fips181' \
 		'third_party/flot' \
+		'third_party/google_input_tools' \
+		'third_party/google_input_tools/third_party/closure_library' \
+		'third_party/google_input_tools/third_party/closure_library/third_party/closure' \
 		'third_party/hunspell' \
 		'third_party/iccjpeg' \
+		'third_party/icu' \
 		'third_party/jstemplate' \
 		'third_party/khronos' \
 		'third_party/leveldatabase' \
 		'third_party/libaddressinput' \
 		'third_party/libjingle' \
 		'third_party/libphonenumber' \
+		'third_party/libsecret' \
 		'third_party/libsrtp' \
+		'third_party/libudev' \
 		'third_party/libusb' \
-		'third_party/libvpx' \
-		'third_party/libvpx/source/libvpx/third_party/x86inc' \
-		'third_party/libwebm' \
 		'third_party/libxml/chromium' \
 		'third_party/libXNVCtrl' \
 		'third_party/libyuv' \
@@ -232,16 +246,18 @@ src_prepare() {
 		'third_party/lzma_sdk' \
 		'third_party/mesa' \
 		'third_party/modp_b64' \
+		'third_party/mojo' \
 		'third_party/mt19937ar' \
 		'third_party/npapi' \
+		'third_party/openmax_dl' \
 		'third_party/opus' \
 		'third_party/ots' \
 		'third_party/pdfium' \
-		'third_party/pdfium/third_party/logging.h' \
-		'third_party/pdfium/third_party/macros.h' \
-		'third_party/pdfium/third_party/numerics' \
-		'third_party/pdfium/third_party/template_util.h' \
+		'third_party/pdfium/third_party/base' \
+		'third_party/pdfium/third_party/bigint' \
+		'third_party/pdfium/third_party/freetype' \
 		'third_party/polymer' \
+		'third_party/protobuf' \
 		'third_party/qcms' \
 		'third_party/readability' \
 		'third_party/sfntly' \
@@ -249,24 +265,27 @@ src_prepare() {
 		'third_party/smhasher' \
 		'third_party/sqlite' \
 		'third_party/tcmalloc' \
-		'third_party/tlslite' \
 		'third_party/trace-viewer' \
+		'third_party/trace-viewer/third_party/components/polymer' \
+		'third_party/trace-viewer/third_party/d3' \
+		'third_party/trace-viewer/third_party/gl-matrix' \
 		'third_party/trace-viewer/third_party/jszip' \
 		'third_party/trace-viewer/third_party/tvcm' \
-		'third_party/trace-viewer/third_party/tvcm/third_party/d3' \
-		'third_party/trace-viewer/third_party/tvcm/third_party/gl-matrix' \
-		'third_party/trace-viewer/third_party/tvcm/third_party/polymer' \
+		'third_party/trace-viewer/third_party/tvcm/third_party/beautifulsoup/polymer_soup.py' \
+		'third_party/trace-viewer/third_party/tvcm/third_party/rcssmin' \
+		'third_party/trace-viewer/third_party/tvcm/third_party/rjsmin' \
 		'third_party/undoview' \
 		'third_party/usrsctp' \
+		'third_party/web-animations-js' \
 		'third_party/webdriver' \
 		'third_party/webrtc' \
 		'third_party/widevine' \
 		'third_party/x86inc' \
 		'third_party/zlib/google' \
 		'url/third_party/mozilla' \
+		'v8/src/third_party/fdlibm' \
 		'v8/src/third_party/kernel' \
 		'v8/src/third_party/valgrind' \
-		'v8/third_party/fdlibm' \
 		--do-remove || die
 }
 
@@ -296,27 +315,27 @@ src_configure() {
 
 	# Use system-provided libraries.
 	# TODO: use_system_hunspell (upstream changes needed).
+	# TODO: use_system_icu (needs http://bugs.icu-project.org/trac/ticket/11358)
 	# TODO: use_system_libsrtp (bug #459932).
-	# TODO: use_system_libvpx (http://crbug.com/347823).
 	# TODO: use_system_libusb (http://crbug.com/266149).
 	# TODO: use_system_opus (https://code.google.com/p/webrtc/issues/detail?id=3077).
+	# TODO: use_system_protobuf (bug #525560).
 	# TODO: use_system_ssl (http://crbug.com/58087).
 	# TODO: use_system_sqlite (http://crbug.com/22208).
 	myconf+="
 		-Duse_system_bzip2=1
 		-Duse_system_flac=1
 		-Duse_system_harfbuzz=1
-		-Duse_system_icu=1
 		-Duse_system_jsoncpp=1
 		-Duse_system_libevent=1
 		-Duse_system_libjpeg=1
 		-Duse_system_libpng=1
 		-Duse_system_libwebp=1
+		-Duse_system_libvpx=1
 		-Duse_system_libxml=1
 		-Duse_system_libxslt=1
 		-Duse_system_minizip=1
 		-Duse_system_nspr=1
-		-Duse_system_protobuf=1
 		-Duse_system_re2=1
 		-Duse_system_snappy=1
 		-Duse_system_speex=1
@@ -339,6 +358,8 @@ src_configure() {
 		$(gyp_use gnome use_gconf)
 		$(gyp_use gnome-keyring use_gnome_keyring)
 		$(gyp_use gnome-keyring linux_link_gnome_keyring)
+		$(gyp_use hidpi enable_hidpi)
+		$(gyp_use hotwording enable_hotwording)
 		$(gyp_use kerberos)
 		$(gyp_use pulseaudio)
 		$(gyp_use tcmalloc use_allocator tcmalloc none)"
@@ -359,24 +380,23 @@ src_configure() {
 	myconf+="
 		-Dlogging_like_official_build=1"
 
+	if [[ $(tc-getCC) == *clang* ]]; then
+		myconf+=" -Dclang=1"
+	else
+		myconf+=" -Dclang=0"
+	fi
+
 	# Never use bundled gold binary. Disable gold linker flags for now.
 	# Do not use bundled clang.
 	myconf+="
-		-Dclang=0
+		-Dclang_use_chrome_plugins=0
 		-Dhost_clang=0
 		-Dlinux_use_bundled_binutils=0
 		-Dlinux_use_bundled_gold=0
 		-Dlinux_use_gold_flags=0"
 
-	# Always support proprietary codecs.
-	myconf+=" -Dproprietary_codecs=1"
-
-	ffmpeg_branding="Chromium"
-	if ! use bindist; then
-		# Enable H.264 support in bundled ffmpeg.
-		ffmpeg_branding="Chrome"
-	fi
-	myconf+=" -Dffmpeg_branding=${ffmpeg_branding}"
+	ffmpeg_branding="$(usex proprietary-codecs Chrome Chromium)"
+	myconf+=" -Dproprietary_codecs=1 -Dffmpeg_branding=${ffmpeg_branding}"
 
 	# Set up Google API keys, see http://www.chromium.org/developers/how-tos/api-keys .
 	# Note: these are for Gentoo use ONLY. For your own distribution,
@@ -434,6 +454,11 @@ src_configure() {
 
 		# Prevent linker from running out of address space, bug #471810 .
 		filter-flags "-g*"
+
+		# Prevent libvpx build failures. Bug 530248, 544702, 546984.
+		if [[ ${myarch} == amd64 || ${myarch} == x86 ]]; then
+			filter-flags -mno-mmx -mno-sse2 -mno-ssse3 -mno-sse4.1 -mno-avx2
+		fi
 	fi
 
 	# Make sure the build system will use the right tools, bug #340795.
@@ -546,6 +571,7 @@ src_install() {
 	popd
 
 	insinto "${CHROMIUM_HOME}"
+	doins out/Release/*.bin || die
 	doins out/Release/*.pak || die
 
 	doins -r out/Release/locales || die
@@ -555,7 +581,6 @@ src_install() {
 	newman out/Release/chrome.1 chromium-browser${CHROMIUM_SUFFIX}.1 || die
 
 	doexe out/Release/libffmpegsumo.so || die
-	doexe out/Release/libpdf.so || die
 
 	# Install icons and desktop entry.
 	local branding size
