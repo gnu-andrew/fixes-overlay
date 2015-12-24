@@ -1,0 +1,55 @@
+--- libgnomevfs/gnome-vfs-ssl.c.old	2015-08-27 18:34:50.200975479 +0100
++++ libgnomevfs/gnome-vfs-ssl.c	2015-09-10 02:03:37.544076802 +0100
+@@ -307,21 +307,6 @@
+ #endif
+ }
+ 
+-#ifdef HAVE_GNUTLS
+-static const int protocol_priority[] = {GNUTLS_TLS1, GNUTLS_SSL3, 0};
+-static const int cipher_priority[] = 
+-	{GNUTLS_CIPHER_RIJNDAEL_128_CBC, GNUTLS_CIPHER_3DES_CBC,
+-	 GNUTLS_CIPHER_RIJNDAEL_256_CBC, GNUTLS_CIPHER_ARCFOUR, 0};
+-static const int comp_priority[] =
+-	{GNUTLS_COMP_ZLIB, GNUTLS_COMP_NULL, 0};
+-static const int kx_priority[] =
+-	{GNUTLS_KX_DHE_RSA, GNUTLS_KX_RSA, GNUTLS_KX_DHE_DSS, 0};
+-static const int mac_priority[] =
+-	{GNUTLS_MAC_SHA, GNUTLS_MAC_MD5, 0};
+-
+-#endif
+-
+-
+ /**
+  * gnome_vfs_ssl_create_from_fd:
+  * @handle_return: pointer to a #GnomeVFSSSL struct, which will
+@@ -410,7 +395,8 @@
+ 	GnomeVFSResult res;
+ 	GnomeVFSSSL *ssl;
+ 	int err;
+-
++	char err_pos;
++	
+ 	ssl = g_new0 (GnomeVFSSSL, 1);
+ 	ssl->private = g_new0 (GnomeVFSSSLPrivate, 1);
+ 	ssl->private->sockfd = fd;
+@@ -430,12 +416,14 @@
+ 	gnutls_transport_set_ptr (ssl->private->tlsstate, 
+ 				  GINT_TO_POINTER (fd));
+ 
+-	gnutls_protocol_set_priority (ssl->private->tlsstate, protocol_priority);
+-	gnutls_cipher_set_priority (ssl->private->tlsstate, cipher_priority);
+-	gnutls_compression_set_priority (ssl->private->tlsstate, comp_priority);
+-	gnutls_kx_set_priority (ssl->private->tlsstate, kx_priority);
+-	gnutls_mac_set_priority (ssl->private->tlsstate, mac_priority);
+-
++	err = gnutls_priority_set_direct (ssl->private->tlsstate, "NORMAL:+COMP-DEFLATE",
++					  &err_pos);
++	if (err != GNUTLS_E_SUCCESS) {
++		g_free (ssl->private);
++		g_free (ssl);
++		return GNOME_VFS_ERROR_INTERNAL;
++	}
++	
+ 	gnutls_cred_set (ssl->private->tlsstate, GNUTLS_CRD_CERTIFICATE,
+ 			 ssl->private->xcred);
+ 
