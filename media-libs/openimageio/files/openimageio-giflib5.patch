@@ -1,0 +1,25 @@
+--- src/gif.imageio/gifinput.cpp.old	2016-02-16 16:30:10.165329011 +0000
++++ src/gif.imageio/gifinput.cpp	2016-02-16 16:55:16.480629541 +0000
+@@ -497,10 +497,21 @@
+ GIFInput::close (void)
+ {
+     if (m_gif_file) {
++#if GIFLIB_MAJOR > 5 || (GIFLIB_MAJOR == 5 && GIFLIB_MINOR >= 1)
++        int giflib_error;
++        if (DGifCloseFile (m_gif_file, &giflib_error) == GIF_ERROR) {
++            error (GifErrorString (giflib_error));
++            return false; 
++        }
++#else
+         if (DGifCloseFile (m_gif_file) == GIF_ERROR) {
+-            error ("Error trying to close the file.");
++            // In Giflib < 5.1.0, the GifFile structure is not freed
++            // so the error code remains available
++            report_last_error ();
++            free (m_gif_file);
+             return false;
+         }
++#endif
+         m_gif_file = NULL;
+     }
+     m_cached_data.clear ();
