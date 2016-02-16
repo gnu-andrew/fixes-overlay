@@ -1,4 +1,4 @@
-# Copyright 1999-2015 Gentoo Foundation
+# Copyright 1999-2016 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 # $Id$
 
@@ -48,7 +48,7 @@ RDEPEND="
 	media-libs/libexif:=
 	media-libs/speex:=
 	pulseaudio? ( media-sound/pulseaudio:= )
-	system-ffmpeg? ( >=media-video/ffmpeg-2.7.2:=[opus,vorbis,vpx] )
+	system-ffmpeg? ( >=media-video/ffmpeg-2.7.2:= )
 	sys-apps/dbus:=
 	sys-apps/pciutils:=
 	>=sys-libs/libcap-2.22:=
@@ -81,7 +81,7 @@ RDEPEND="
 		dev-libs/libxslt:=
 		dev-libs/re2:=
 		media-libs/flac:=
-		media-libs/harfbuzz:=[icu(+)]
+		>=media-libs/harfbuzz-0.9.41:=[icu(+)]
 		>=media-libs/libjpeg-turbo-1.2.0-r1:=
 		media-libs/libpng:0=
 		>=media-libs/libwebp-0.4.0:=
@@ -166,10 +166,10 @@ pkg_pretend() {
 
 	# Check build requirements, bug #541816 and bug #471810 .
 	CHECKREQS_MEMORY="3G"
-	CHECKREQS_DISK_BUILD="10G"
+	CHECKREQS_DISK_BUILD="5G"
 	eshopts_push -s extglob
 	if is-flagq '-g?(gdb)?([1-9])'; then
-		CHECKREQS_DISK_BUILD="30G"
+		CHECKREQS_DISK_BUILD="25G"
 	fi
 	eshopts_pop
 	check-reqs_pkg_pretend
@@ -195,7 +195,6 @@ src_prepare() {
 	epatch "${FILESDIR}/${PN}-widevine-r1.patch"
 	epatch "${FILESDIR}/${PN}-last-commit-position-r0.patch"
 	epatch "${FILESDIR}/${PN}-snapshot-toolchain-r0.patch"
-	epatch "${FILESDIR}/${PN}-rpath-r0.patch"
 	epatch "${FILESDIR}/${PN}-system-icu-r0.patch"
 
 	epatch_user
