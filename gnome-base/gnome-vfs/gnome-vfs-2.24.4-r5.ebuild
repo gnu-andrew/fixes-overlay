@@ -1,4 +1,4 @@
-# Copyright 1999-2014 Gentoo Foundation
+# Copyright 1999-2016 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 # $Id$
 
@@ -15,7 +15,7 @@ HOMEPAGE="https://www.gnome.org/"
 LICENSE="GPL-2 LGPL-2"
 SLOT="2"
 KEYWORDS="~alpha ~amd64 ~arm ~ia64 ~mips ~ppc ~ppc64 ~sh ~sparc ~x86 ~amd64-fbsd ~x86-fbsd ~amd64-linux ~x86-linux ~ppc-macos ~x86-macos ~sparc-solaris ~x86-solaris"
-IUSE="acl gnutls ipv6 kerberos samba ssl zeroconf"
+IUSE="acl gnutls ipv6 kerberos libressl samba ssl zeroconf"
 
 RDEPEND="
 	>=gnome-base/gconf-2.32.4-r1[${MULTILIB_USEDEP}]
@@ -35,7 +35,8 @@ RDEPEND="
 			>=net-libs/gnutls-2.12.23-r6[${MULTILIB_USEDEP}]
 			!gnome-extra/gnome-vfs-sftp )
 		!gnutls? (
-			>=dev-libs/openssl-1.0.1h-r2[${MULTILIB_USEDEP}]
+			!libressl? ( >=dev-libs/openssl-1.0.1h-r2:0[${MULTILIB_USEDEP}] )
+			libressl? ( dev-libs/libressl[${MULTILIB_USEDEP}] )
 			!gnome-extra/gnome-vfs-sftp ) )
 	zeroconf? ( >=net-dns/avahi-0.6.31-r2[${MULTILIB_USEDEP}] )
 	abi_x86_32? (
@@ -73,9 +74,6 @@ src_prepare() {
 	# Fix building with gnutls-2.12, bug #388895
 	epatch "${FILESDIR}"/${PN}-2.24.4-gnutls27.patch
 
-	# Fix building with gnutls-3.4, bug #560084
-	epatch "${FILESDIR}"/${PN}-2.24.4-gnutls34.patch
-
 	# Prevent duplicated volumes, bug #193083
 	epatch "${FILESDIR}"/${PN}-2.24.0-uuid-mount.patch
 
@@ -87,6 +85,9 @@ src_prepare() {
 
 	# Fix for automake-1.13 compatibility, #466944
 	epatch "${FILESDIR}"/${P}-automake-1.13.patch
+
+	# Fix building with gnutls-3.4, bug #560084
+	epatch "${FILESDIR}"/${PN}-2.24.4-gnutls34.patch
 
 	sed -e "s/AM_CONFIG_HEADER/AC_CONFIG_HEADERS/" -i configure.in || die
 

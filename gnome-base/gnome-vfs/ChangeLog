@@ -1,6 +1,12 @@
 # ChangeLog for gnome-base/gnome-vfs
-# Copyright 1999-2014 Gentoo Foundation; Distributed under the GPL v2
+# Copyright 1999-2016 Gentoo Foundation; Distributed under the GPL v2
 # $Header: /var/cvsroot/gentoo-x86/gnome-base/gnome-vfs/ChangeLog,v 1.362 2014/11/21 09:20:25 pacho Exp $
+
+*gnome-vfs-2.24.4-r5 (09 Sep 2016)
+
+  09 Sep 2016; Andrew John Hughes <gnu_andrew@member.fsf.org>
+  +gnome-vfs-2.24.4-r5.ebuild, -gnome-vfs-2.24.4-r3.ebuild, metadata.xml:
+  gnome-base/gnome-vfs: Bring in latest revision from main tree.
 
   21 Nov 2014; Pacho Ramos <pacho@gentoo.org> -gnome-vfs-2.24.4-r1.ebuild:
   Drop old
