@@ -1,0 +1,9 @@
+*wicd-1.7.4-r2 (05 May 2017)
+
+  05 May 2017; Andrew John Hughes <gnu_andrew@member.fsf.org>
+  +files/wicd-1.7.2.4-fix-desktop-categories.patch,
+  +files/wicd-1.7.3-add-missing-gnome-shell-extension.patch,
+  +files/wicd-1.7.3-bitrate-property.patch,
+  +files/wicd-1.7.3-undefined-LANG.patch, +files/wicd-1.7.3-urwid-1.3.0.patch,
+  +files/wicd-init-sve-start.patch, +metadata.xml, +wicd-1.7.4-r2.ebuild:
+  net-misc/wicd: Fix location of pixmaps directory.
