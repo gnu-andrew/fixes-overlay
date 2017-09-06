@@ -1,0 +1,12 @@
+--- validator/val_secalgo.c.old	2017-05-30 13:28:25.000000000 +0100
++++ validator/val_secalgo.c	2017-09-06 08:10:15.711394089 +0100
+@@ -72,6 +72,9 @@
+ #include <openssl/engine.h>
+ #endif
+ 
++#include <openssl/bn.h>
++#include <openssl/dsa.h>
++
+ /** fake DSA support for unit tests */
+ int fake_dsa = 0;
+ /** fake SHA1 support for unit tests */

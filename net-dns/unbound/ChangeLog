@@ -1,0 +1,9 @@
+*unbound-1.6.4 (06 Sep 2017)
+
+  06 Sep 2017; Andrew John Hughes <gnu_andrew@member.fsf.org>
+  +files/unbound-1.5.7-trust-anchor-file.patch, +files/unbound-anchor.service,
+  +files/unbound-openssl-1.1.0.patch, +files/unbound.confd,
+  +files/unbound.initd, +files/unbound.service, +files/unbound.socket,
+  +files/unbound_at.service, +metadata.xml, +unbound-1.6.4.ebuild:
+  net-dns/unbound: Require a multilib version of dev-libs/libsodium and patch to
+  work with OpenSSL 1.1.0
