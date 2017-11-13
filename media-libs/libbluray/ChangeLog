@@ -1,6 +1,13 @@
 # ChangeLog for media-libs/libbluray
-# Copyright 1999-2014 Gentoo Foundation; Distributed under the GPL v2
+# Copyright 1999-2017 Gentoo Foundation; Distributed under the GPL v2
 # $Header: /var/cvsroot/gentoo-x86/media-libs/libbluray/ChangeLog,v 1.49 2013/06/25 12:51:43 ago Exp $
+
+*libbluray-1.0.1 (13 Nov 2017)
+
+  13 Nov 2017; Andrew John Hughes <gnu_andrew@member.fsf.org>
+  +libbluray-1.0.1.ebuild, -libbluray-0.3.0-r1.ebuild, -libbluray-0.5.0.ebuild,
+  -libbluray-0.6.1.ebuild, -libbluray-9999.ebuild, metadata.xml:
+  media-libs/libbluray: Update to 1.0.1 and add IcedTea 3.x (Java 8).
 
 *libbluray-0.6.1 (07 Aug 2014)
 
