@@ -26,8 +26,9 @@ RDEPEND="${PYTHON_DEPS}
 		gtk? ( dev-python/pygtk[${PYTHON_USEDEP}] )
 		|| (
 			x11-misc/ktsuss
-			kde-apps/kdesu
-			)
+			kde-plasma/kde-cli-tools[kdesu]
+			kde-frameworks/kdesu
+		)
 	)
 	|| (
 		net-misc/dhcpcd
@@ -50,7 +51,10 @@ RDEPEND="${PYTHON_DEPS}
 	)
 	pm-utils? ( sys-power/pm-utils )
 	gnome-shell? ( gnome-base/gnome-shell )
-	net-wireless/rfkill
+	|| (
+		>=sys-apps/util-linux-2.31_rc1
+		net-wireless/rfkill
+	)
 	"
 PATCHES=(
 	"${FILESDIR}"/${PN}-init-sve-start.patch

@@ -1,3 +1,9 @@
+*wicd-1.7.4-r3 (20 Nov 2017)
+
+  20 Nov 2017; Andrew John Hughes <gnu_andrew@member.fsf.org>
+  +wicd-1.7.4-r3.ebuild, -wicd-1.7.4-r2.ebuild:
+  net-misc/wicd: Sync with latest main tree build.
+
 *wicd-1.7.4-r2 (05 May 2017)
 
   05 May 2017; Andrew John Hughes <gnu_andrew@member.fsf.org>
