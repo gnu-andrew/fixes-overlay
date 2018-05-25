@@ -1,6 +1,15 @@
 # ChangeLog for media-libs/x265
-# Copyright 1999-2015 Gentoo Foundation; Distributed under the GPL v2
+# Copyright 1999-2018 Gentoo Foundation; Distributed under the GPL v2
 # $Header: /var/cvsroot/gentoo-x86/media-libs/x265/ChangeLog,v 1.14 2014/09/12 07:07:56 jer Exp $
+
+*x265-2.7 (25 May 2018)
+
+  25 May 2018; Andrew John Hughes <gnu_andrew@member.fsf.org> +files/arm.patch,
+  +files/execstack.asm, +files/neon.patch, +files/ppc64.patch, +x265-2.7.ebuild,
+  -files/1.8-build-Disable-march-selection-from-CMakeLists.txt.patch,
+  -files/1.8-extralibs_order.patch, -files/x265-execstack.patch,
+  -x265-1.8-r3.ebuild, metadata.xml:
+  media-libs/x265: Update to 2.7 & append rather than patching
 
 *x265-1.8-r3 (23 Dec 2015)
 
