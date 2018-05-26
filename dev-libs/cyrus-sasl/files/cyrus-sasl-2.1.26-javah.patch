@@ -6,7 +6,7 @@ diff -Nru java.orig/CyrusSasl/Makefile.am java/CyrusSasl/Makefile.am
  
  javasasl.h: $(CLASSES)
 -	$(CLASSPATH_ENV) $(JAVAH) -o $@ -jni $(patsubst %.class,CyrusSasl.%,$^)
-+	$(CLASSPATH_ENV) $(JAVAH) -cp $(CLASSPATH_ENV) -o $@ -jni $(patsubst %.class,CyrusSasl.%,$^)
++	$(CLASSPATH_ENV) $(JAVAH) -cp $(CLASSPATH_ENV):$(builddir)/$(JAVAROOT) -o $@ -jni $(patsubst %.class,CyrusSasl.%,$^)
  
  # force build of class files
  $(CLASSES): classjavasasl.stamp

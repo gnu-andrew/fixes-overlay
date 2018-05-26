@@ -1,0 +1,124 @@
+--- plugins/otp.c.old	2012-10-12 15:05:48.000000000 +0100
++++ plugins/otp.c	2018-05-24 04:21:34.306129968 +0100
+@@ -118,15 +118,22 @@
+ static void otp_hash(const EVP_MD *md, char *in, size_t inlen,
+ 		     unsigned char *out, int swab)
+ {
+-    EVP_MD_CTX mdctx;
+-    char hash[EVP_MAX_MD_SIZE];
++    EVP_MD_CTX *mdctx;
++    unsigned char hash[EVP_MAX_MD_SIZE];
+     unsigned int i;
+     int j;
+-    unsigned hashlen;
++    unsigned int hashlen;
++
++#if OPENSSL_VERSION_NUMBER >= 0x10100000L
++    mdctx = EVP_MD_CTX_new();
++#else
++    EVP_MD_CTX mdctx_struct;
++    mdctx = &mdctx_struct;
++#endif
+     
+-    EVP_DigestInit(&mdctx, md);
+-    EVP_DigestUpdate(&mdctx, in, inlen);
+-    EVP_DigestFinal(&mdctx, hash, &hashlen);
++    EVP_DigestInit(mdctx, md);
++    EVP_DigestUpdate(mdctx, in, inlen);
++    EVP_DigestFinal(mdctx, hash, &hashlen);
+     
+     /* Fold the result into 64 bits */
+     for (i = OTP_HASH_SIZE; i < hashlen; i++) {
+@@ -142,6 +149,10 @@
+     }
+     else
+ 	memcpy(out, hash, OTP_HASH_SIZE);
++
++#if OPENSSL_VERSION_NUMBER >= 0x10100000L
++    EVP_MD_CTX_free(mdctx);
++#endif
+ }
+ 
+ static int generate_otp(const sasl_utils_t *utils,
+@@ -752,16 +763,26 @@
+ 	
+ 	/* alternate dictionary */
+ 	if (alt_dict) {
+-	    EVP_MD_CTX mdctx;
+-	    char hash[EVP_MAX_MD_SIZE];
+-	    int hashlen;
++	    EVP_MD_CTX *mdctx;
++	    unsigned char hash[EVP_MAX_MD_SIZE];
++	    unsigned int hashlen;
+ 	    
+-	    EVP_DigestInit(&mdctx, md);
+-	    EVP_DigestUpdate(&mdctx, word, strlen(word));
+-	    EVP_DigestFinal(&mdctx, hash, &hashlen);
++#if OPENSSL_VERSION_NUMBER >= 0x10100000L
++	    mdctx = EVP_MD_CTX_new();
++#else
++	    EVP_MD_CTX mdctx_struct;
++	    mdctx = &mdctx_struct;
++#endif
++	    EVP_DigestInit(mdctx, md);
++	    EVP_DigestUpdate(mdctx, word, strlen(word));
++	    EVP_DigestFinal(mdctx, hash, &hashlen);
+ 	    
+ 	    /* use lowest 11 bits */
+ 	    x = ((hash[hashlen-2] & 0x7) << 8) | hash[hashlen-1];
++
++#if OPENSSL_VERSION_NUMBER >= 0x10100000L
++	    EVP_MD_CTX_free(mdctx);
++#endif
+ 	}
+ 	
+ 	/* left align 11 bits on byte boundary */
+--- plugins/ntlm.c.old	2012-01-27 23:31:36.000000000 +0000
++++ plugins/ntlm.c	2018-05-24 04:51:24.677831870 +0100
+@@ -424,11 +424,18 @@
+ 			 const sasl_utils_t *utils,
+ 			 char **buf, unsigned *buflen, int *result)
+ {
+-    HMAC_CTX ctx;
++    HMAC_CTX *ctx;
+     unsigned char hash[EVP_MAX_MD_SIZE];
+     char *upper;
+     unsigned int len;
+ 
++#if OPENSSL_VERSION_NUMBER >= 0x10100000L
++    ctx = HMAC_CTX_new();
++#else
++    HMAC_CTX ctx_struct;
++    ctx = &ctx_struct;
++#endif
++
+     /* Allocate enough space for the unicode target */
+     len = (unsigned int) (strlen(authid) + xstrlen(target));
+     if (_plug_buf_alloc(utils, buf, buflen, 2 * len + 1) != SASL_OK) {
+@@ -449,17 +456,21 @@
+ 	HMAC(EVP_md5(), hash, MD4_DIGEST_LENGTH, *buf, 2 * len, hash, &len);
+ 
+ 	/* V2 = HMAC-MD5(NTLMv2hash, challenge + blob) + blob */
+-	HMAC_Init(&ctx, hash, len, EVP_md5());
+-	HMAC_Update(&ctx, challenge, NTLM_NONCE_LENGTH);
+-	HMAC_Update(&ctx, blob, bloblen);
+-	HMAC_Final(&ctx, V2, &len);
+-	HMAC_cleanup(&ctx);
++	HMAC_Init(ctx, hash, len, EVP_md5());
++	HMAC_Update(ctx, challenge, NTLM_NONCE_LENGTH);
++	HMAC_Update(ctx, blob, bloblen);
++	HMAC_Final(ctx, V2, &len);
++	HMAC_cleanup(ctx);
+ 
+ 	/* the blob is concatenated outside of this function */
+ 
+ 	*result = SASL_OK;
+     }
+ 
++#if OPENSSL_VERSION_NUMBER >= 0x10100000L
++    HMAC_CTX_free(ctx);
++#endif
++    
+     return V2;
+ }
+ 

@@ -1,6 +1,5 @@
-# Copyright 1999-2014 Gentoo Foundation
+# Copyright 1999-2018 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /var/cvsroot/gentoo-x86/dev-libs/cyrus-sasl/cyrus-sasl-2.1.26-r9.ebuild,v 1.7 2014/12/28 15:30:29 titanofold Exp $
 
 EAPI=5
 
@@ -15,25 +14,52 @@ SRC_URI="ftp://ftp.cyrusimap.org/cyrus-sasl/${P}.tar.gz"
 LICENSE="BSD-with-attribution"
 SLOT="2"
 KEYWORDS="~amd64"
-IUSE="authdaemond berkdb gdbm kerberos ldapdb openldap mysql pam postgres sample sqlite
+IUSE="authdaemond berkdb gdbm kerberos ldapdb libressl openldap mysql pam postgres sample selinux sqlite
 srp ssl static-libs urandom"
 
-DEPEND="net-mail/mailbase
+DEPEND="
+	net-mail/mailbase
 	authdaemond? ( || ( net-mail/courier-imap mail-mta/courier ) )
-	berkdb? ( >=sys-libs/db-4.8.30-r1[${MULTILIB_USEDEP}] )
+	berkdb? ( >=sys-libs/db-4.8.30-r1:=[${MULTILIB_USEDEP}] )
 	gdbm? ( >=sys-libs/gdbm-1.10-r1[${MULTILIB_USEDEP}] )
 	kerberos? ( >=virtual/krb5-0-r1[${MULTILIB_USEDEP}] )
 	openldap? ( >=net-nds/openldap-2.4.38-r1[${MULTILIB_USEDEP}] )
 	mysql? ( virtual/mysql )
 	pam? ( >=virtual/pam-0-r1[${MULTILIB_USEDEP}] )
-	postgres? ( dev-db/postgresql )
+	postgres? ( dev-db/postgresql:= )
 	sqlite? ( >=dev-db/sqlite-3.8.2:3[${MULTILIB_USEDEP}] )
-	ssl? ( >=dev-libs/openssl-1.0.1h-r2[${MULTILIB_USEDEP}] )
-	java? ( >=virtual/jdk-1.4 )"
-RDEPEND="${DEPEND}"
+	ssl? (
+		!libressl? ( >=dev-libs/openssl-1.0.1h-r2:0[${MULTILIB_USEDEP}] )
+		libressl? ( dev-libs/libressl[${MULTILIB_USEDEP}] )
+	)
+	java? ( >=virtual/jdk-1.6:= )"
+
+RDEPEND="
+	${DEPEND}
+	selinux? ( sec-policy/selinux-sasl )"
 
 MULTILIB_WRAPPED_HEADERS=(
 	/usr/include/sasl/md5global.h
+)
+
+PATCHES=(
+	"${FILESDIR}/${PN}-2.1.25-sasldb_al.patch"
+	"${FILESDIR}/${PN}-2.1.25-saslauthd_libtool.patch"
+	"${FILESDIR}/${PN}-2.1.25-avoid_pic_overwrite.patch"
+	"${FILESDIR}/${PN}-2.1.25-autotools_fixes.patch"
+	"${FILESDIR}/${PN}-2.1.25-as_needed.patch"
+	"${FILESDIR}/${PN}-2.1.25-missing_header.patch"
+	"${FILESDIR}/${PN}-2.1.25-fix_heimdal.patch"
+	"${FILESDIR}/${PN}-2.1.25-auxprop.patch"
+	"${FILESDIR}/${PN}-2.1.23-gss_c_nt_hostbased_service.patch"
+	"${FILESDIR}/${PN}-2.1.25-service_keytabs.patch"
+	"${FILESDIR}/${PN}-2.1.26-missing-size_t.patch"
+	"${FILESDIR}/${PN}-2.1.26-CVE-2013-4122.patch"
+	"${FILESDIR}/${PN}-2.1.26-send-imap-logout.patch"
+	"${FILESDIR}/${PN}-2.1.26-canonuser-ldapdb-garbage-in-out-buffer.patch"
+	"${FILESDIR}/${PN}-2.1.26-fix_dovecot_authentication.patch"
+	"${FILESDIR}/${PN}-2.1.26-javah.patch"
+	"${FILESDIR}/${PN}-openssl-1.1.0.patch"
 )
 
 pkg_setup() {
@@ -41,22 +67,7 @@ pkg_setup() {
 }
 
 src_prepare() {
-	epatch "${FILESDIR}"/${PN}-2.1.25-sasldb_al.patch
-	epatch "${FILESDIR}"/${PN}-2.1.25-saslauthd_libtool.patch
-	epatch "${FILESDIR}"/${PN}-2.1.25-avoid_pic_overwrite.patch
-	epatch "${FILESDIR}"/${PN}-2.1.25-autotools_fixes.patch
-	epatch "${FILESDIR}"/${PN}-2.1.25-as_needed.patch
-	epatch "${FILESDIR}"/${PN}-2.1.25-missing_header.patch
-	epatch "${FILESDIR}"/${PN}-2.1.25-fix_heimdal.patch
-	epatch "${FILESDIR}"/${PN}-2.1.25-auxprop.patch
-	epatch "${FILESDIR}"/${PN}-2.1.23-gss_c_nt_hostbased_service.patch
-	epatch "${FILESDIR}"/${PN}-2.1.25-service_keytabs.patch
-	epatch "${FILESDIR}"/${PN}-2.1.26-missing-size_t.patch
-	epatch "${FILESDIR}"/${PN}-2.1.26-CVE-2013-4122.patch
-	epatch "${FILESDIR}"/${PN}-2.1.26-send-imap-logout.patch
-	epatch "${FILESDIR}"/${PN}-2.1.26-canonuser-ldapdb-garbage-in-out-buffer.patch
-	epatch "${FILESDIR}"/${PN}-2.1.26-fix_dovecot_authentication.patch
-	epatch "${FILESDIR}"/${PN}-2.1.26-javah.patch
+	epatch "${PATCHES[@]}"
 
 	# Get rid of the -R switch (runpath_switch for Sun)
 	# >=gcc-4.6 errors out with unknown option
@@ -75,14 +86,17 @@ src_prepare() {
 		saslauthd/configure.in || die
 
 	eautoreconf
-
-	# Alters Makefile.in so must be after autoreconf
-	epatch "${FILESDIR}"/${PN}-2.1.26-classpath.patch
 }
 
 src_configure() {
 	append-flags -fno-strict-aliasing
-	append-cppflags -D_XOPEN_SOURCE -D_XOPEN_SOURCE_EXTENDED -D_BSD_SOURCE -DLDAP_DEPRECATED
+	if [[ ${CHOST} == *-solaris* ]] ; then
+		# getpassphrase is defined in /usr/include/stdlib.h
+		append-cppflags -DHAVE_GETPASSPHRASE
+	else
+		# this horrendously breaks things on Solaris
+		append-cppflags -D_XOPEN_SOURCE -D_XOPEN_SOURCE_EXTENDED -D_BSD_SOURCE -DLDAP_DEPRECATED
+	fi
 
 	multilib-minimal_src_configure
 }
@@ -95,7 +109,7 @@ multilib_src_configure() {
 
 	# Add authdaemond support (bug #56523).
 	if use authdaemond ; then
-		myconf+=( --with-authdaemond=/var/lib/courier/authdaemon/socket )
+		myconf+=( --with-authdaemond="${EPREFIX}"/var/lib/courier/authdaemon/socket )
 	fi
 
 	# Fix for bug #59634.
@@ -136,13 +150,14 @@ multilib_src_configure() {
 		--enable-auth-sasldb \
 		--disable-cmulocal \
 		--disable-krb4 \
+		--disable-macos-framework \
 		--enable-otp \
 		--without-sqlite \
-		--with-saslauthd=/run/saslauthd \
-		--with-pwcheck=/run/saslauthd \
-		--with-configdir=/etc/sasl2 \
-		--with-plugindir=/usr/$(get_libdir)/sasl2 \
-		--with-dbpath=/etc/sasl2/sasldb2 \
+		--with-saslauthd="${EPREFIX}"/run/saslauthd \
+		--with-pwcheck="${EPREFIX}"/run/saslauthd \
+		--with-configdir="${EPREFIX}"/etc/sasl2 \
+		--with-plugindir="${EPREFIX}"/usr/$(get_libdir)/sasl2 \
+		--with-dbpath="${EPREFIX}"/etc/sasl2/sasldb2 \
 		$(use_with ssl openssl) \
 		$(use_with pam) \
 		$(use_with openldap ldap) \
@@ -151,9 +166,9 @@ multilib_src_configure() {
 		$(use_enable kerberos gssapi) \
 		$(multilib_native_use_enable java) \
 		$(multilib_native_use_with java javahome ${JAVA_HOME}) \
-		$(multilib_native_use_with mysql mysql /usr) \
+		$(multilib_native_use_with mysql mysql "${EPREFIX}"/usr) \
 		$(multilib_native_use_with postgres pgsql) \
-		$(use_with sqlite sqlite3 /usr/$(get_libdir)) \
+		$(use_with sqlite sqlite3 "${EPREFIX}"/usr/$(get_libdir)) \
 		$(use_enable srp) \
 		$(use_enable static-libs static) \
 		"${myconf[@]}"
@@ -181,11 +196,11 @@ multilib_src_install() {
 		fi
 
 		# Default location for java classes breaks OpenOffice (bug #60769).
-		if use java ; then
+		if use java; then
 			java-pkg_dojar ${PN}.jar
-			java-pkg_regso "${D}/usr/$(get_libdir)/libjavasasl.so"
+			java-pkg_regso "${ED}/usr/$(get_libdir)/libjavasasl$(get_libname)"
 			# hackish, don't wanna dig through makefile
-			rm -Rf "${D}/usr/$(get_libdir)/java"
+			rm -rf "${ED}/usr/$(get_libdir)/java" || die
 			docinto "java"
 			dodoc "${S}/java/README" "${FILESDIR}/java.README.gentoo" "${S}"/java/doc/*
 			dodir "/usr/share/doc/${PF}/java/Test"
@@ -217,21 +232,25 @@ multilib_src_install_all() {
 	systemd_dounit "${FILESDIR}/saslauthd.service"
 	systemd_dotmpfilesd "${FILESDIR}/${PN}.conf"
 
-	prune_libtool_files --modules
+	# The get_modname bit is important: do not remove the .la files on
+	# platforms where the lib isn't called .so for cyrus searches the .la to
+	# figure out what the name is supposed to be instead
+	use static-libs || [[ $(get_modname) != .so ]] || \
+		prune_libtool_files --modules
 }
 
 pkg_postinst () {
 	# Generate an empty sasldb2 with correct permissions.
-	if ( use berkdb || use gdbm ) && [[ ! -f "${ROOT}/etc/sasl2/sasldb2" ]] ; then
+	if ( use berkdb || use gdbm ) && [[ ! -f "${EROOT}/etc/sasl2/sasldb2" ]] ; then
 		einfo "Generating an empty sasldb2 with correct permissions ..."
-		echo "p" | "${ROOT}/usr/sbin/saslpasswd2" -f "${ROOT}/etc/sasl2/sasldb2" -p login \
+		echo "p" | "${EROOT}/usr/sbin/saslpasswd2" -f "${EROOT}/etc/sasl2/sasldb2" -p login \
 			|| die "Failed to generate sasldb2"
-		"${ROOT}/usr/sbin/saslpasswd2" -f "${ROOT}/etc/sasl2/sasldb2" -d login \
+		"${EROOT}/usr/sbin/saslpasswd2" -f "${EROOT}/etc/sasl2/sasldb2" -d login \
 			|| die "Failed to delete temp user"
-		chown root:mail "${ROOT}/etc/sasl2/sasldb2" \
-			|| die "Failed to chown ${ROOT}/etc/sasl2/sasldb2"
-		chmod 0640 "${ROOT}/etc/sasl2/sasldb2" \
-			|| die "Failed to chmod ${ROOT}/etc/sasl2/sasldb2"
+		chown root:mail "${EROOT}/etc/sasl2/sasldb2" \
+			|| die "Failed to chown ${EROOT}/etc/sasl2/sasldb2"
+		chmod 0640 "${EROOT}/etc/sasl2/sasldb2" \
+			|| die "Failed to chmod ${EROOT}/etc/sasl2/sasldb2"
 	fi
 
 	if use authdaemond ; then
