@@ -2,6 +2,10 @@
 # Copyright 1999-2018 Gentoo Foundation; Distributed under the GPL v2
 # $Header: /var/cvsroot/gentoo-x86/dev-libs/cyrus-sasl/ChangeLog,v 1.312 2014/12/28 15:30:29 titanofold Exp $
 
+  30 May 2018; Andrew John Hughes <gnu_andrew@member.fsf.org>
+  cyrus-sasl-2.1.26-r11.ebuild, files/cyrus-sasl-openssl-1.1.0.patch:
+  dev-libs/cyrus-sasl: Update OpenSSL 1.1.0 patch to fix all cases.
+
 *cyrus-sasl-2.1.26-r11 (26 May 2018)
 
   26 May 2018; Andrew John Hughes <gnu_andrew@member.fsf.org>

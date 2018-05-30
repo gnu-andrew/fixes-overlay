@@ -85,6 +85,9 @@ src_prepare() {
 	sed -i -e 's:AC_CONFIG_MACRO_DIR:AC_CONFIG_MACRO_DIRS:g' \
 		saslauthd/configure.in || die
 
+	sed -i -e 's:-Wall:-Werror=implicit-function-declaration:' \
+		configure.in || die
+
 	eautoreconf
 }
 

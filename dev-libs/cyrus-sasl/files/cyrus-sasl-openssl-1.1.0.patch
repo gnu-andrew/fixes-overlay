@@ -1,5 +1,5 @@
 --- plugins/otp.c.old	2012-10-12 15:05:48.000000000 +0100
-+++ plugins/otp.c	2018-05-24 04:21:34.306129968 +0100
++++ plugins/otp.c	2018-05-30 01:21:17.904361341 +0100
 @@ -118,15 +118,22 @@
  static void otp_hash(const EVP_MD *md, char *in, size_t inlen,
  		     unsigned char *out, int swab)
@@ -73,8 +73,32 @@
  	}
  	
  	/* left align 11 bits on byte boundary */
+@@ -1444,7 +1465,11 @@
+     *plugcount = 1;  
+     
+     /* Add all digests */
++#if OPENSSL_VERSION_NUMBER >= 0x10100000L
++    OPENSSL_init_crypto(OPENSSL_INIT_ADD_ALL_DIGESTS, NULL);
++#else
+     OpenSSL_add_all_digests();
++#endif
+     
+     return SASL_OK;
+ }
+@@ -1845,7 +1870,11 @@
+     *plugcount = 1;
+     
+     /* Add all digests */
++#if OPENSSL_VERSION_NUMBER >= 0x10100000L
++    OPENSSL_init_crypto(OPENSSL_INIT_ADD_ALL_DIGESTS, NULL);
++#else
+     OpenSSL_add_all_digests();
++#endif
+     
+     return SASL_OK;
+ }
 --- plugins/ntlm.c.old	2012-01-27 23:31:36.000000000 +0000
-+++ plugins/ntlm.c	2018-05-24 04:51:24.677831870 +0100
++++ plugins/ntlm.c	2018-05-30 01:17:53.983580173 +0100
 @@ -424,11 +424,18 @@
  			 const sasl_utils_t *utils,
  			 char **buf, unsigned *buflen, int *result)
@@ -95,7 +119,7 @@
      /* Allocate enough space for the unicode target */
      len = (unsigned int) (strlen(authid) + xstrlen(target));
      if (_plug_buf_alloc(utils, buf, buflen, 2 * len + 1) != SASL_OK) {
-@@ -449,17 +456,21 @@
+@@ -449,17 +456,25 @@
  	HMAC(EVP_md5(), hash, MD4_DIGEST_LENGTH, *buf, 2 * len, hash, &len);
  
  	/* V2 = HMAC-MD5(NTLMv2hash, challenge + blob) + blob */
@@ -104,21 +128,26 @@
 -	HMAC_Update(&ctx, blob, bloblen);
 -	HMAC_Final(&ctx, V2, &len);
 -	HMAC_cleanup(&ctx);
++#if OPENSSL_VERSION_NUMBER >= 0x10100000L
++	HMAC_Init_ex(ctx, hash, len, EVP_md5(), NULL);
++#else
 +	HMAC_Init(ctx, hash, len, EVP_md5());
++#endif
 +	HMAC_Update(ctx, challenge, NTLM_NONCE_LENGTH);
 +	HMAC_Update(ctx, blob, bloblen);
 +	HMAC_Final(ctx, V2, &len);
++#if OPENSSL_VERSION_NUMBER >= 0x10100000L
++	HMAC_CTX_free(ctx);
++#else
 +	HMAC_cleanup(ctx);
++#endif
  
  	/* the blob is concatenated outside of this function */
  
  	*result = SASL_OK;
      }
- 
-+#if OPENSSL_VERSION_NUMBER >= 0x10100000L
-+    HMAC_CTX_free(ctx);
-+#endif
-+    
+-
++   
      return V2;
  }
  
