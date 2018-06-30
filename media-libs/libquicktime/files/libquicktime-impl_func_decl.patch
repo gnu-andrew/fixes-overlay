@@ -1,0 +1,11 @@
+--- a/plugins/png/qtpng.c.old	2011-01-07 14:40:46.000000000 +0000
++++ b/plugins/png/qtpng.c	2018-06-30 22:17:06.425585507 +0100
+@@ -26,6 +26,8 @@
+ #include <quicktime/colormodels.h>
+ #include <png.h>
+ #include <stdlib.h>
++#include <string.h>
++#include <strings.h>
+ #include "qtpng.h"
+ 
+ typedef struct
