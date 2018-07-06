@@ -1,0 +1,38 @@
+--- a/configure.ac.old	2012-03-29 20:44:28.000000000 +0100
++++ b/configure.ac	2018-06-30 22:42:31.345626220 +0100
+@@ -255,7 +255,7 @@
+   AC_TRY_RUN([
+     #include <lame/lame.h>
+     #include <stdio.h>
+-    main()
++    int main()
+     {
+     int version_major;
+     int version_minor;
+@@ -671,7 +671,7 @@
+ AC_TRY_RUN([
+     #include <inttypes.h>
+     #include <faac.h>
+-    main()
++    int main()
+     {
+     int samplerate = 44100, num_channels = 2;
+     unsigned long input_samples, output_bytes;
+@@ -740,7 +740,7 @@
+ AC_TRY_RUN([
+     #include <neaacdec.h>
+     #include <stdio.h>
+-    main()
++    int main()
+     {
+     int faad_major;
+     int faad_minor;
+@@ -773,7 +773,7 @@
+ AC_TRY_RUN([
+     #include <faad.h>
+     #include <stdio.h>
+-    main()
++    int main()
+     {
+     int faad_major;
+     int faad_minor;

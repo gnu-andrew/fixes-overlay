@@ -3,7 +3,7 @@
 
 EAPI=6
 
-inherit libtool multilib-minimal
+inherit autotools multilib-minimal
 
 DESCRIPTION="An enhanced version of the quicktime4linux library"
 HOMEPAGE="http://libquicktime.sourceforge.net/"
@@ -59,6 +59,7 @@ PATCHES=(
 	"${FILESDIR}"/${P}-ffmpeg2.patch
 	"${FILESDIR}"/CVE-2016-2399.patch
 	"${FILESDIR}"/${PN}-impl_func_decl.patch
+	"${FILESDIR}"/${PN}-configure.patch
 )
 
 src_prepare() {
@@ -76,6 +77,7 @@ src_prepare() {
 		sed -i -e "s:CODEC_ID_:AV_&:g" "plugins/ffmpeg/${x}" || die
 	done
 
+	eautoreconf
 	elibtoolize # Required for .so versioning on g/fbsd
 }
 
