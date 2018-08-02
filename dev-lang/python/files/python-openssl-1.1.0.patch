@@ -1,5 +1,5 @@
 --- a/Modules/_ssl.c.old	2018-04-29 23:47:33.000000000 +0100
-+++ b/Modules/_ssl.c	2018-07-15 00:03:10.320760162 +0100
++++ b/Modules/_ssl.c	2018-07-28 22:26:56.894768967 +0100
 @@ -74,6 +74,7 @@
  #include "openssl/ssl.h"
  #include "openssl/err.h"
@@ -67,7 +67,7 @@
      if (proto_version == PY_SSL_VERSION_TLS1)
          ctx = SSL_CTX_new(TLSv1_method());
  #if HAVE_TLSv1_2
-@@ -2201,6 +2221,26 @@
+@@ -2201,6 +2221,29 @@
  #endif
      else if (proto_version == PY_SSL_VERSION_TLS)
          ctx = SSL_CTX_new(TLS_method());
@@ -90,11 +90,14 @@
 +    else if (proto_version == PY_SSL_VERSION_SSL2)
 +        proto_version = -1;
 +#endif
++    else if (proto_version == PY_SSL_VERSION_TLS) {
++	/* No restrictions necessary */
++    }
 +#endif  
      else
          proto_version = -1;
      PySSL_END_ALLOW_THREADS
-@@ -4472,7 +4512,11 @@
+@@ -4472,7 +4515,11 @@
      /* SSLeay() gives us the version of the library linked against,
         which could be different from the headers version.
      */
@@ -106,7 +109,7 @@
      r = PyLong_FromUnsignedLong(libver);
      if (r == NULL)
          return;
-@@ -4482,7 +4526,11 @@
+@@ -4482,7 +4529,11 @@
      r = Py_BuildValue("IIIII", major, minor, fix, patch, status);
      if (r == NULL || PyModule_AddObject(m, "OPENSSL_VERSION_INFO", r))
          return;
@@ -119,7 +122,7 @@
          return;
  
 --- a/Modules/_hashopenssl.c.old	2018-04-29 23:47:33.000000000 +0100
-+++ b/Modules/_hashopenssl.c	2018-07-15 00:00:37.507130798 +0100
++++ b/Modules/_hashopenssl.c	2018-07-28 22:18:01.175182942 +0100
 @@ -56,7 +56,12 @@
  #define _OPENSSL_SUPPORTS_SHA2
  #endif

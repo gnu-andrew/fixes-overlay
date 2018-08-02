@@ -1,3 +1,7 @@
+  02 Aug 2018; Andrew John Hughes <gnu_andrew@member.fsf.org>
+  files/python-openssl-1.1.0.patch:
+  dev-lang/python: Fix bug with unhandled protocol version
+
 *python-2.7.15 (15 Jul 2018)
 
   15 Jul 2018; Andrew John Hughes <gnu_andrew@member.fsf.org>
