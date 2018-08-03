@@ -1,0 +1,18 @@
+--- a/modules/vtt_in/vtt_dec.c.old	2017-04-26 12:33:17.000000000 +0100
++++ b/modules/vtt_in/vtt_dec.c	2018-06-29 06:44:28.403186686 +0100
+@@ -130,6 +130,7 @@
+ 	case GPAC_OTI_SCENE_VTT_MP4:
+ 	{
+ #ifndef GPAC_DISABLE_MEDIA_IMPORT
++#ifdef GPAC_HAS_SPIDERMONKEY
+ 		char start[100], end[100];
+ 		GF_List *cues;
+ 		cues = gf_webvtt_parse_cues_from_data(inBuffer, inBufferLength, 0);
+@@ -147,6 +148,7 @@
+ 		}
+ 		gf_list_del(cues);
+ #endif
++#endif
+ 	}
+ 	break;
+ 
