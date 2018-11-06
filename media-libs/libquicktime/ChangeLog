@@ -1,3 +1,12 @@
+*libquicktime-1.2.4-r3 (06 Nov 2018)
+
+  06 Nov 2018; Andrew John Hughes <gnu_andrew@member.fsf.org>
+  +files/libquicktime-1.2.4-CVE-2016-2399.patch,
+  +files/libquicktime-1.2.4-CVE-2017-9122_et_al.patch,
+  +libquicktime-1.2.4-r3.ebuild, -files/CVE-2016-2399.patch,
+  -libquicktime-1.2.4-r2.ebuild:
+  media-libs/libquicktime: Sync CVE-2017-9122_et_al fix from main tree.
+
   06 Jul 2018; Andrew John Hughes <gnu_andrew@member.fsf.org>
   +files/libquicktime-configure.patch, libquicktime-1.2.4-r2.ebuild:
   media-libs/libquicktime: Fix missing main return values in configure
