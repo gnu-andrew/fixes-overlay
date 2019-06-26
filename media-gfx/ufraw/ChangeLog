@@ -1,6 +1,18 @@
 # ChangeLog for media-gfx/ufraw
-# Copyright 1999-2009 Gentoo Foundation; Distributed under the GPL v2
+# Copyright 1999-2019 Gentoo Authors; Distributed under the GPL v2
 # $Header: /var/cvsroot/gentoo-x86/media-gfx/ufraw/ChangeLog,v 1.56 2009/03/23 21:00:18 maekke Exp $
+
+*ufraw-0.22-r2 (26 Jun 2019)
+
+  26 Jun 2019; Andrew John Hughes <gnu_andrew@member.fsf.org>
+  +files/ufraw-0.17-cfitsio-automagic.patch, +files/ufraw-0.22-crashfix.patch,
+  +files/ufraw-0.22-drop_superfluous_abs.patch,
+  +files/ufraw-0.22-exiv2-0.27.patch, +files/ufraw-0.22-fix-unsigned-char.patch,
+  +files/ufraw-0.22-jasper-automagic.patch, +files/ufraw-0.22-jpeg9.patch,
+  +files/ufraw-0.22-missing-header.patch, +ufraw-0.22-r2.ebuild,
+  -files/ufraw-0.15-configure.patch, -files/ufraw-0.15-glibc-2.10.patch,
+  -ufraw-0.15-r2.ebuild, metadata.xml:
+  media-gfx/ufraw: Fix missing iostream header import
 
   23 Mar 2009; Markus Meier <maekke@gentoo.org> -ufraw-0.15.ebuild:
   old
@@ -231,4 +243,3 @@
   27 Sep 2005; Luca Barbato <lu_zero@gentoo.org> +metadata.xml,
   +ufraw-0.5.ebuild:
   First commit, solves bug #75681
-

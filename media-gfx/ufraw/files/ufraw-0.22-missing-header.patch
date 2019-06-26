@@ -1,0 +1,10 @@
+--- a/ufraw_exiv2.cc.old	2019-06-25 19:02:41.164612593 +0100
++++ b/ufraw_exiv2.cc	2019-06-25 19:16:28.055890893 +0100
+@@ -18,6 +18,7 @@
+ #include <exiv2/exiv2.hpp>
+ #include <sstream>
+ #include <cassert>
++#include <iostream>
+ 
+ /*
+  * Helper function to copy a string to a buffer, converting it from
