@@ -1,6 +1,13 @@
 # ChangeLog for media-libs/libbluray
-# Copyright 1999-2017 Gentoo Foundation; Distributed under the GPL v2
+# Copyright 1999-2020 Gentoo Authors; Distributed under the GPL v2
 # $Header: /var/cvsroot/gentoo-x86/media-libs/libbluray/ChangeLog,v 1.49 2013/06/25 12:51:43 ago Exp $
+
+*libbluray-1.2.0 (16 Jun 2020)
+
+  16 Jun 2020; Andrew John Hughes <gnu_andrew@member.fsf.org>
+  +files/libbluray-jars.patch, +libbluray-1.2.0.ebuild, -libbluray-1.0.1.ebuild,
+  metadata.xml:
+  media-libs/libbluray: Update to 1.2.0.
 
 *libbluray-1.0.1 (13 Nov 2017)
 

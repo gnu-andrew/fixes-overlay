@@ -1,17 +1,17 @@
-# Copyright 1999-2017 Gentoo Foundation
+# Copyright 1999-2020 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=6
+EAPI=7
 
 if [[ "${PV#9999}" != "${PV}" ]] ; then
 	inherit git-r3
-	EGIT_REPO_URI="https://git.videolan.org/git/libbluray.git"
+	EGIT_REPO_URI="https://code.videolan.org/videolan/libbluray.git"
 else
 	KEYWORDS="~amd64"
-	SRC_URI="https://ftp.videolan.org/pub/videolan/libbluray/${PV}/${P}.tar.bz2"
+	SRC_URI="https://downloads.videolan.org/pub/videolan/libbluray/${PV}/${P}.tar.bz2"
 fi
 
-inherit autotools java-pkg-opt-2 flag-o-matic eutils multilib-minimal
+inherit autotools java-pkg-opt-2 flag-o-matic multilib-minimal
 
 DESCRIPTION="Blu-ray playback libraries"
 HOMEPAGE="https://www.videolan.org/developers/libbluray.html"
@@ -41,6 +41,9 @@ RDEPEND="
 "
 DEPEND="
 	${COMMON_DEPEND}
+	java? ( ${JDK_DEPEND} )
+"
+BDEPEND="
 	java? (
 		${JDK_DEPEND}
 		dev-java/ant-core
@@ -48,7 +51,19 @@ DEPEND="
 	virtual/pkgconfig
 "
 
-DOCS=( ChangeLog README.txt )
+PATCHES=(
+	"${FILESDIR}"/${PN}-jars.patch
+)
+
+DOCS=(
+	ChangeLog
+	README.txt
+)
+
+src_prepare() {
+	default
+	eautoreconf
+}
 
 pkg_setup() {
 	JAVA_PKG_WANT_BUILD_VM="
@@ -58,25 +73,12 @@ pkg_setup() {
 	JAVA_PKG_WANT_SOURCE="1.6"
 	JAVA_PKG_WANT_TARGET="1.6"
 
-	java-pkg-opt-2_pkg_setup
-}
-
-src_prepare() {
-	default
-
-	if use java ; then
-		export JDK_HOME="$(java-config -g JAVA_HOME)"
-
-		# don't install a duplicate jar file
-		sed -i '/^jar_DATA/d' Makefile.am || die
-
-		java-pkg-opt-2_src_prepare
-	fi
-
-	eautoreconf
+	use java && java-pkg-opt-2_pkg_setup
 }
 
 multilib_src_configure() {
+	use java || unset JDK_HOME # Bug #621992.
+
 	ECONF_SOURCE="${S}" econf \
 		--disable-optimizations \
 		$(multilib_native_use_enable utils examples) \
@@ -89,21 +91,17 @@ multilib_src_configure() {
 
 multilib_src_install() {
 	emake DESTDIR="${D}" install
+	multilib_is_native_abi || return
 
-	if multilib_is_native_abi && use utils; then
-		cd .libs/
-		dobin index_dump mobj_dump mpls_dump bd_info bdsplice clpi_dump hdmv_test libbluray_test list_titles sound_dump
-		if use java; then
-			dobin bdj_test
-		fi
-	fi
+	use utils &&
+		find .libs/ -type f -executable ! -name "${PN}.*" \
+			 $(use java || echo '! -name bdj_test') -exec dobin {} +
 
-	if multilib_is_native_abi && use java; then
-		java-pkg_newjar "${BUILD_DIR}"/.libs/${PN}-j2se-*.jar
-	fi
+	use java &&
+		java-pkg_regjar "${ED}"/usr/share/${PN}/lib/*.jar
 }
 
 multilib_src_install_all() {
 	einstalldocs
-	prune_libtool_files
+	find "${D}" -name '*.la' -delete || die
 }
